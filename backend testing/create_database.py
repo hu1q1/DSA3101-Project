@@ -5,9 +5,10 @@ import mysql.connector
 load_dotenv()
 mysql_root_password = os.getenv("MYSQL_ROOT_PASSWORD")
 
+#change port number as required
 db = mysql.connector.connect(
     host="localhost",
-    port=3306,
+    port=3307,
     user="root",
     password=mysql_root_password,
 )

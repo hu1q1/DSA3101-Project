@@ -2,6 +2,8 @@ To create database (database currently empty)
 1) docker run --name test-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=test -d mysql
 (I changed my port to 3307:3306 but shouldnt be an issue)
 
-2) update .env file with MYSQL_ROOT_PASSWORD. This would be the password you've set previously
+2) In mysql workbench, create a new connection. default parameters should be fine. Set the password to 'test'. (For my case, I had to change port to 3307 which will give a warning)
 
-3) download relevant packages and run create_database.py
+3) update .env file with MYSQL_ROOT_PASSWORD. This would be the password you've set previously
+
+4) download relevant packages and run create_database.py. Your connection should show a new database 'testdatabase' with a table 'survey'. Your other connections (if any) should not have this.

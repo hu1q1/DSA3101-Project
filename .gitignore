@@ -1,3 +1,10 @@
 .env
 .venv
 faiss_index
+updated_faiss_index
+__pycache__
+demographic_questions
+stage_0_questions
+stage_1_questions
+stage_2_questions
+stage_3_questions

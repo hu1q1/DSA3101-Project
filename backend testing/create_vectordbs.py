@@ -64,7 +64,7 @@ def create_vectordbs(embedding_model):
             page_content=question['question'],
             metadata={
                 "id": question['id'],
-                "category":"demographics",
+                "stage": -1,
                 "check": question['check_user_response']
             }
         ) for question in demographic_questions
@@ -75,7 +75,7 @@ def create_vectordbs(embedding_model):
             page_content=question['question'],
             metadata={
                 "id": question['id'],
-                "stage": "0",
+                "stage": 0,
                 "check": question['check_user_response']
             }
         ) for question in stage_0_questions
@@ -86,7 +86,7 @@ def create_vectordbs(embedding_model):
             page_content=question['question'],
             metadata={
                 "id": question['id'],
-                "stage": "1",
+                "stage": 1,
                 "check": question['check_user_response']
             }
         ) for question in stage_1_questions
@@ -97,7 +97,7 @@ def create_vectordbs(embedding_model):
             page_content=question['question'],
             metadata={
                 "id": question['id'],
-                "stage": "2",
+                "stage": 2,
                 "check": question['check_user_response']
             }
         ) for question in stage_2_questions
@@ -108,7 +108,7 @@ def create_vectordbs(embedding_model):
             page_content=question['question'],
             metadata={
                 "id": question['id'],
-                "stage": "3",
+                "stage": 3,
                 "check": question['check_user_response']
             }
         ) for question in stage_3_questions

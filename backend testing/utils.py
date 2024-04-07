@@ -11,10 +11,10 @@ from langchain_community.llms import HuggingFaceEndpoint
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import PromptTemplate
+from langchain.prompts import PromptTemplate, ChatPromptTemplate
 from operator import itemgetter
 from langchain_core.runnables import RunnableParallel
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 
 # Importing required modules from transformers package
 from transformers import pipeline
@@ -49,8 +49,9 @@ ENDPOINT_URL = (
 llm = HuggingFaceEndpoint(
     endpoint_url=ENDPOINT_URL,  # URL of the Hugging Face API endpoint
     task="text-generation",  # Specify the task for the model
-    max_new_tokens=128,  # Maximum number of tokens to generate
-    temperature=0.01,  # Controls randomness in sampling
+    max_new_tokens=250,  # Maximum number of tokens to generate
+    top_k=300, # Top k words to sample
+    temperature=1,  # Controls randomness in sampling
     return_full_text=False,  # Specify whether to return the full generated text
     streaming=True,  # Enable streaming mode for efficient processing of long texts
     stop_sequences=["</s>"],  # Specify sequences to stop generation
@@ -61,9 +62,7 @@ llm = HuggingFaceEndpoint(
 embedding_model = HuggingFaceEmbeddings(
     model_name="all-MiniLM-L6-v2",  # Name of the pre-trained model to use for embeddings
     model_kwargs={"device": "cpu"},  # Specify device for inference (CPU in this case)
-    encode_kwargs={
-        "normalize_embeddings": False
-    },  # Specify if embeddings should be normalized
+    encode_kwargs={"normalize_embeddings": False},  # Specify if embeddings should be normalized
 )
 
 
@@ -81,9 +80,7 @@ def get_vectorstore(stage: int):
     """
     if stage == -1:
         db = FAISS.load_local(
-            "demographic_questions",
-            embedding_model,
-            allow_dangerous_deserialization=True,
+            "demographic_questions", embedding_model, allow_dangerous_deserialization=True,
         )
     elif stage == 0:
         db = FAISS.load_local(
@@ -174,29 +171,24 @@ def get_rag_chain(retriever):
         RunnableParallel: The RAG chain for generating follow-up questions.
     """
     # General prompt for all questions
-    prompt_template = """You are a friendly survey interface assistant.
-        You are given a survey question, a survey user response to that question, the sentiment of the user response and a follow-up question below.
-        Reply to the survey user response kindly and just ask the follow-up question. Do not ask any other questions.
+    prompt = ChatPromptTemplate.from_template("""
+        [INST] As a friendly survey interface assistant, your task is to respond to the user's survey response in a personalized and friendly manner but do not ask any questions here.
+        Additionally, ask the follow-up question provided below.
+    
+        # Question:
+        {previous_question}
+        # User response:
+        {user_response}
+        # User sentiment:
+        {sentiment}
+        # Follow-up question:
+        {next_question}
 
-        Question: {previous_question}
-        User response: {user_response}
-        User sentiment: {sentiment}
-        Follow-up question: {next_question}
-        
-        Reply:"""
-    prompt = PromptTemplate(
-        template=prompt_template,
-        input_variables=[
-            "previous_question",
-            "user_response",
-            "next_question",
-            "sentiment",
-        ],
+        Reply: [/INST]"""
     )
 
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
-        # return "\n\n".join(doc.metadata['prompt'] + '\n' + doc.page_content for doc in docs)
 
     rag_chain = (
         # Retrieve next best question
@@ -282,9 +274,7 @@ def invoke_rag_chain(
             - 'docs' (List[Document]): List of documents related to the response.
             - 'query' (str): The query used for generating the response.
     """
-    output = (
-        {}
-    )  # Initialize output dictionary to store generated response and other information
+    output = {}  # Initialize output dictionary to store generated response and other information
 
     # Iterate over chunks of data from the RAG chain
     for chunk in rag_chain.stream(
@@ -305,8 +295,8 @@ def invoke_rag_chain(
             else:
                 output[key] += chunk[key]
             # Print the generated answer if available
-            if key == "answer":
-                print(chunk[key], end="", flush=True)
+            # if key == "answer":
+            #     print(chunk[key], end="", flush=True)
 
     return output  # Return the output dictionary containing the generated response and other information
 
@@ -336,12 +326,8 @@ def get_llm_outputs(rag_chain, user_response: str, previous_question: str):
 
     # Extract relevant information
     llm_reply = output["answer"]  # LLM reply to output to frontend
-    next_question_document = output["docs"][
-        0
-    ]  # Document of the next question asked by LLM
-    next_question_id = next_question_document.metadata[
-        "id"
-    ]  # ID of the next question asked by LLM
+    next_question_document = output["docs"][0]  # Document of the next question asked by LLM
+    next_question_id = next_question_document.metadata["id"]  # ID of the next question asked by LLM
 
     return llm_reply, next_question_document, next_question_id
 
@@ -441,19 +427,107 @@ def checkUserResponse(question_id: int, stage: int) -> bool:
     return False
 
 
+def generate_first_question(question: str) -> str:
+    """
+    Generate the first question of a survey on hair routines and hair products, welcoming the respondent in a friendly manner.
+
+    Parameters:
+        question (str): The first question to be asked in the survey.
+
+    Returns:
+        str: The generated prompt including the first question.
+    """
+    prompt = ChatPromptTemplate.from_template("""
+        [INST] Welcome the survey respondent to my survey on hair routines and hair products in a friendly and cheerful language. Ask the first question given:
+
+        # Question:
+        {question}
+
+        [/INST]"""
+    )
+    chain = prompt | llm | StrOutputParser()
+    output = chain.invoke({"question": question})
+    return output
+
+
+def generate_end_survey_msg(user_response: str, question: str) -> str:
+    """
+    Generate a closing message for the end of a survey, responding kindly to the user's input and thanking them for their participation.
+
+    Parameters:
+        user_response (str): The user's response to the survey question.
+        question (str): The survey question.
+
+    Returns:
+        str: The generated closing message.
+    """
+    prompt = ChatPromptTemplate.from_template("""
+        [INST] Respond kindly to the user's input to the given question below. Do not ask further questions at this stage. Finally, thank the survey participant for their participation warmly in a clear and exaggerated tone.
+
+        # User Response:
+        {response}
+        # Question:
+        {question}
+
+        Reply: [/INST]"""
+                                            
+    )
+    chain = prompt | llm | StrOutputParser()
+    output = chain.invoke({"response": user_response, "question": question})
+    return output
+
+def evaluate_response(user_response: str, question: str) -> dict:
+    prompt = ChatPromptTemplate.from_template("""
+        [INST] Evaluate whether a follow-up question is necessary based on the user's response to the given question. Provide a "Yes" if a follow-up question is necessary or "No" otherwise, along with a confidence score between 0.0 and 1.0, and the reasoning. Your response should be in the form of a JSON object with the keys "Assessment" and "Confidence" and "Reason".
+
+        # User Response:
+        {response}
+
+        # Question:
+        {question}
+
+        [/INST]"""
+    )
+    chain = prompt | llm | JsonOutputParser()
+    output = chain.invoke({"response": user_response, "question": question})
+    return output
+
+def generateFollowUp(user_response: str, question: str):
+    prompt = ChatPromptTemplate.from_template(
+        """
+        [INST] You are a follow-up question generator. You are to provide a follow up question based on the given the survey user response to the question asked.
+        In clear and friendly tone and language, provide the follow-up question.
+        
+        # User Response:
+        {response}
+        
+        # Question:
+        {question}
+
+        Follow-up question: [/INST]"""
+    )
+    chain = prompt | llm | StrOutputParser()
+    output = chain.invoke({"response": user_response, "question": question})
+    return output
+
+
 # Function to start the survey
 def start_survey():
     # Create survey question vectordbs in local directory
     create_vectordbs(embedding_model=embedding_model)
 
     # Invoke LLM to ask the first question: What is your name?
-    first_question = llm.invoke(
-        f"[INST]I am starting to answer a survey. Greet me and ask me what my name is.[/INST]"
-    )
+    first_question = generate_first_question("What is your name?")
 
     # Create a json file to store the survey history
     history = pd.DataFrame(
-        {"id": [1], "question": ["What is your name?"], "user_response": [""]}
+        {
+            "id": [1],
+            "question": ["What is your name?"],
+            "llm_question": [first_question],
+            "user_response": [""],
+            "stage": [-1]
+        }
     )
     history.to_json("history.json", orient="records")
 
@@ -462,11 +536,10 @@ def start_survey():
 
 
 # Function to end the survey
-def end_survey():
-    end_message = """
-    It was interesting to get to know more about you!Thank you for participating in the survey!\n
-    If you have any further questions or feedback, feel free to reach out to us.
-    """
+def end_survey(user_response: str, question: str) -> str:
+    # Generate end message
+    end_message = generate_end_survey_msg(user_response, question)
+
     # TO DO: Add survey history to mysql database
     # TO DO: Generate a LLM summary of the survey responses by user in the form of a personality test result
 
@@ -489,21 +562,47 @@ def end_survey():
 
 
 # Function to ask the next survey question
-def get_question_id_and_llm_response(
-    user_response: str, stage: int
-):  # prev_question_id
+def get_question_id_and_llm_response(user_response: str, stage: int):
 
     # Load in survey history
     history = pd.read_json("history.json")
 
-    # TO DO: Check if previous question requires an evaluation check
-    # prev_question_id = history.loc[history.index[-1], "id"]
-    # needCheck = checkUserResponse(prev_question_id, stage)
-    # if needCheck:
-    #     pass
-
     # Add user response to history
     history.loc[history.index[-1], "user_response"] = user_response
+
+    # Check if previous question asked requires checking
+    prev_question_id = int(history.loc[history.index[-1], "id"])
+    needCheck = checkUserResponse(prev_question_id, stage)
+    if needCheck:
+
+        # Get previous llm question asked
+        prev_llm_question = history.loc[history.index[-1], "llm_question"]
+
+        # Check if a follow up question is needed based on user response and the question asked
+        assessment = evaluate_response(user_response, prev_llm_question)
+        needFollowUp = True if assessment["Assessment"] == "Yes" else False
+        if needFollowUp:
+
+            # Check if already followed up: allow only one follow up question
+            if os.path.exists('clarify.txt'):
+                os.remove("clarify.txt")
+            else:
+                with open("clarify.txt", "w") as file:
+                    file.write("")
+
+                # Generate follow up question
+                follow_up_question = generateFollowUp(user_response, prev_llm_question)
+
+                # Get root question for follow up question
+                prev_question = history.loc[history.index[-1], "question"]
+
+                # Saving follow up question to history
+                new_row = pd.DataFrame({"id": [prev_question_id], "question": [prev_question], "llm_question": [follow_up_question], "user_response": [""], "stage": stage})
+                history = pd.concat([history, new_row], ignore_index=True)
+                history.to_json("history.json", orient="records")
+
+                # Return root question id and follow up question to frontend
+                return prev_question_id, follow_up_question
 
     # Get the vectordb of current survey stage
     db = get_vectorstore(stage)
@@ -512,11 +611,14 @@ def get_question_id_and_llm_response(
     if len(db.docstore._dict) == 0:
         # If survey is at stage 3, end survey
         if stage == 3:
-            llm_reply = end_survey()
+            last_question = history.loc[history.index[-1], "llm_question"]
+            llm_reply = end_survey(user_response, last_question)
+            history.to_json("history.json", orient="records")
+            # Return question id of -1 to frontend to signify end of survey
             return -1, llm_reply
 
-        db = get_vectorstore(stage + 1)
         stage += 1
+        db = get_vectorstore(stage)
 
     # Retrieve the next best question with RAG chain
     retriever = get_retriever(db)
@@ -534,7 +636,9 @@ def get_question_id_and_llm_response(
         {
             "id": [next_question_id],
             "question": [next_question_document.page_content],
+            "llm_question": [llm_reply],
             "user_response": [""],
+            'stage': [next_question_document.metadata['stage']]
         }
     )
     history = pd.concat([history, new_row], ignore_index=True)

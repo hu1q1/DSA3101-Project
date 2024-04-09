@@ -1,0 +1,22 @@
+version: "3"
+name: survey-container
+services:
+  #database
+  mysql:
+    image: mysql
+    container_name: test-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+
+  #backend
+  backend:
+    container_name: backend
+    build:
+      context: ./backend testing
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+
+  #frontend

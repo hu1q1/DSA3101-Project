@@ -100,10 +100,11 @@ const predefinedAnswers = {
 
 
     17: [
-        { text: 'Pantene Pro-V', imageUrl: null },
-        { text: 'Hair Care Shampoo', imageUrl: null },
-        { text: 'Conditioner', imageUrl: null },
-        { text: 'I don\'t know any', imageUrl: null }
+        { text: 'Micellar series', imageUrl: 'https://images.ctfassets.net/0wlsnpt5f2xm/1ruXIldhnbLUR6LrtSJt9w/8ef2b540924c00beb1da055266d1712b/Component_4_____1_2x.png?fm=png&q=75' },
+        { text: 'Core benefits', imageUrl: 'https://images.ctfassets.net/0wlsnpt5f2xm/3qTdLVZOxMsj5FRKDkqqt2/6074a1f350c981223e99569c2071e63d/Component_5_____1_2x.png?fm=png&q=75' },
+        { text: '3 minutes miracle', imageUrl: 'https://images.ctfassets.net/0wlsnpt5f2xm/1yxPgTU0rAq7FIq8hlhIDU/6c6a57474d893f1a38ee6fa893c83daf/Pantene_Navigation_Image_MY.jpg?fm=png&q=75' },
+        { text: 'Miracles collection', imageUrl: 'https://images.ctfassets.net/0wlsnpt5f2xm/1FUVlrUDy03A1L12PzmpqF/ce45b2f3a6d9a995728549f8c97093b9/Miracles_dune-1324x660.jpg?fm=png&q=75' },
+        { text: 'Nutrient blend collection', imageUrl: 'https://images.ctfassets.net/0wlsnpt5f2xm/2715siv5zOmnYcY8wrl3ef/e40a9635332481f307b328a3797da2d2/Pantene-Nutrient-Blends-Products-PLP.jpg?fm=png&q=75' }
     ],
     18: [
         { text: 'Word of mouth', imageUrl: null },

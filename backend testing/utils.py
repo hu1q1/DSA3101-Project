@@ -536,12 +536,15 @@ def start_survey():
 
 
 # Function to end the survey
-def end_survey(user_response: str, question: str) -> str:
-    # Generate end message
-    end_message = generate_end_survey_msg(user_response, question)
+def end_survey(history: pd.DataFrame) -> str:
 
-    # TO DO: Add survey history to mysql database
-    # TO DO: Generate a LLM summary of the survey responses by user in the form of a personality test result
+    # Generate end message
+    last_question = history.loc[history.index[-1], "llm_question"]
+    user_response = history.loc[history.index[-1], "user_response"]
+    end_message = generate_end_survey_msg(user_response, last_question)
+
+    # TO DO: Save survey history into mysql database
+    
 
     # Remove created files and directories during the survey
     if os.path.exists("demographic_questions"):
@@ -611,9 +614,8 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
     if len(db.docstore._dict) == 0:
         # If survey is at stage 3, end survey
         if stage == 3:
-            last_question = history.loc[history.index[-1], "llm_question"]
-            llm_reply = end_survey(user_response, last_question)
-            history.to_json("history.json", orient="records")
+            # Generate end message
+            llm_reply = end_survey(history)
             # Return question id of -1 to frontend to signify end of survey
             return -1, llm_reply
 

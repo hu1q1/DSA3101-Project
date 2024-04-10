@@ -3,14 +3,18 @@ from dotenv import load_dotenv
 import mysql.connector
 import json
 
-# retrieve chat history in history.json
-with open("./history.json", "r") as file:
-    hist = json.load(file)
-
 load_dotenv()
 mysql_root_password = os.getenv("MYSQL_ROOT_PASSWORD")
 
 
+# retrieve chat history in history.json
+def get_hist():
+    with open("./history.json", "r") as file:
+        hist = json.load(file)
+    return hist
+
+
+# creates database
 def create_database():
     # change port number as required
     db = mysql.connector.connect(

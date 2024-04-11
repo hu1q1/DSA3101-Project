@@ -78,13 +78,9 @@ def get_vectorstore(stage: int):
     Returns:
         FAISS index: The vectorstore loaded from the local directory.
     """
-    if stage == -1:
+    if stage == 0:
         db = FAISS.load_local(
-            "demographic_questions", embedding_model, allow_dangerous_deserialization=True,
-        )
-    elif stage == 0:
-        db = FAISS.load_local(
-            "stage_0_questions", embedding_model, allow_dangerous_deserialization=True
+            "stage_0_questions", embedding_model, allow_dangerous_deserialization=True,
         )
     elif stage == 1:
         db = FAISS.load_local(
@@ -97,6 +93,10 @@ def get_vectorstore(stage: int):
     elif stage == 3:
         db = FAISS.load_local(
             "stage_3_questions", embedding_model, allow_dangerous_deserialization=True
+        )
+    elif stage == 4:
+        db = FAISS.load_local(
+            "stage_4_questions", embedding_model, allow_dangerous_deserialization=True
         )
     return db
 
@@ -173,7 +173,7 @@ def get_rag_chain(retriever):
     # General prompt for all questions
     prompt = ChatPromptTemplate.from_template("""
         [INST] As a friendly survey interface assistant, your task is to respond to the user's survey response in a personalized and friendly manner but do not ask any questions here.
-        Additionally, ask the follow-up question provided below.
+        Additionally, ask the follow-up question provided below. Do not provide options.
     
         # Question:
         {previous_question}
@@ -359,9 +359,7 @@ def remove_question_from_db(
         vectorstore.delete([vectorstore.index_to_docstore_id[count - 1]])
 
     # Save the updated vectorstore in the local directory for persistence
-    if stage == -1:
-        vectorstore.save_local("demographic_questions")
-    elif stage == 0:
+    if stage == 0:
         vectorstore.save_local("stage_0_questions")
     elif stage == 1:
         vectorstore.save_local("stage_1_questions")
@@ -369,6 +367,8 @@ def remove_question_from_db(
         vectorstore.save_local("stage_2_questions")
     elif stage == 3:
         vectorstore.save_local("stage_3_questions")
+    elif stage == 4:
+        vectorstore.save_local("stage_4_questions")
 
 
 def checkUserResponse(question_id: int, stage: int) -> bool:
@@ -377,23 +377,13 @@ def checkUserResponse(question_id: int, stage: int) -> bool:
 
     Args:
         question_id (int): The ID of the question to check.
-        stage (int): The stage of the survey (0, 1, 2, or 3).
+        stage (int): The stage of the survey (1, 2, 3 or 4).
 
     Returns:
         bool: True if user response needs to be checked, False otherwise.
     """
     # Check the stage of the survey
-    if stage == 0:
-        # Iterate through stage 0 questions
-        for question in stage_0_questions:
-            # Check if question ID matches
-            if question["id"] == question_id:
-                # Check if user response needs to be checked
-                if question["check_user_response"] == 0:
-                    return False
-                else:
-                    return True
-    elif stage == 1:
+    if stage == 1:
         # Iterate through stage 1 questions
         for question in stage_1_questions:
             # Check if question ID matches
@@ -416,6 +406,16 @@ def checkUserResponse(question_id: int, stage: int) -> bool:
     elif stage == 3:
         # Iterate through stage 3 questions
         for question in stage_3_questions:
+            # Check if question ID matches
+            if question["id"] == question_id:
+                # Check if user response needs to be checked
+                if question["check_user_response"] == 0:
+                    return False
+                else:
+                    return True
+    elif stage == 4:
+        # Iterate through stage 4 questions
+        for question in stage_4_questions:
             # Check if question ID matches
             if question["id"] == question_id:
                 # Check if user response needs to be checked
@@ -526,7 +526,7 @@ def start_survey():
             "question": ["What is your name?"],
             "llm_question": [first_question],
             "user_response": [""],
-            "stage": [-1]
+            "stage": [0]
         }
     )
     history.to_json("history.json", orient="records")
@@ -547,8 +547,6 @@ def end_survey(history: pd.DataFrame) -> str:
     
 
     # Remove created files and directories during the survey
-    if os.path.exists("demographic_questions"):
-        shutil.rmtree("demographic_questions/")
     if os.path.exists("stage_0_questions"):
         shutil.rmtree("stage_0_questions/")
     if os.path.exists("stage_1_questions"):
@@ -557,6 +555,8 @@ def end_survey(history: pd.DataFrame) -> str:
         shutil.rmtree("stage_2_questions/")
     if os.path.exists("stage_3_questions"):
         shutil.rmtree("stage_3_questions/")
+    if os.path.exists("stage_4_questions"):
+        shutil.rmtree("stage_4_questions/")
     if os.path.exists("history.json"):
         os.remove("history.json")
 
@@ -612,8 +612,8 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
 
     # Go to next stage if there are no more questions in the current vectordb
     if len(db.docstore._dict) == 0:
-        # If survey is at stage 3, end survey
-        if stage == 3:
+        # If survey is at stage 4, end survey
+        if stage == 4:
             # Generate end message
             llm_reply = end_survey(history)
             # Return question id of -1 to frontend to signify end of survey

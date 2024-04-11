@@ -26,7 +26,7 @@ if start:
         print("LLM Reply: ", llm_reply)
         user_response = input("User response: ")
         # Prepare data for POST request
-        data = {'user_response': user_response, 'stage': -1}
+        data = {'user_response': user_response, 'stage': 0}
     else:
         noError = False
 
@@ -46,15 +46,15 @@ if noError:
             user_response = input("User response: ")
             # Assign stage based on question ID and prepare data for POST request
             if next_question_id in stageminus1:
-                data = {'user_response': user_response, 'stage': -1}
-            elif next_question_id in stage0:
                 data = {'user_response': user_response, 'stage': 0}
+            elif next_question_id in stage0:
+                data = {'user_response': user_response, 'stage': 1}
             elif next_question_id in stage1:
-                data = {'user_response': user_response, 'stage': 1}        
+                data = {'user_response': user_response, 'stage': 2}        
             elif next_question_id in stage2:
-                data = {'user_response': user_response, 'stage': 2} 
+                data = {'user_response': user_response, 'stage': 3} 
             elif next_question_id in stage3:
-                data = {'user_response': user_response, 'stage': 3}       
+                data = {'user_response': user_response, 'stage': 4}       
 
 else:
     # Print error message if API response is not successful

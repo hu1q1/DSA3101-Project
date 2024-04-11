@@ -1,5 +1,5 @@
-
 from flask import Flask, request, jsonify, render_template
+import requests
 
 app = Flask(__name__)
 
@@ -13,32 +13,51 @@ curr_qn = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,-1
 
 @app.route('/initialise_survey', methods=['POST'])
 def initialise_survey():
+
+    response = requests.post('http://localhost:5001/initialise_surveyy')
+    # Check the response
+    if response.status_code == 200:
+        response_data = response.json()
+        next_question_id = response_data['next_question_id']
+        llm_reply = response_data['llm_reply']
     
-    # give first qn
-    modified_data = {
-        'next_question_id': 1,
-        'llm_reply': "(llm's provides the very first qn)"
-    } 
+        # give first qn
+        modified_data = {
+            'next_question_id': next_question_id,
+            'llm_reply': llm_reply
+        } 
     
-    # Send the modified data back to the frontend
-    return jsonify(modified_data)
+        # Send the modified data back to the frontend
+        return jsonify(modified_data)
+    else:
+        # Print error message if API response is not successful
+        print("Error:", response.status_code)
 
 @app.route('/get_question_id_and_llm_response', methods=['POST'])
 def handle_post_request():
-    # Get the data from the request
-    data = request.json
-    
-    curr_qnnum = curr_qn[0]
-    curr_qn.pop(0)
+    # Extract user response from the request data
+    user_response = request.json.get("user_response")
+    stage = request.json.get("stage")
+    data = {'user_response': user_response, 'stage': stage}
+    print(data)
+
+    response = requests.post('http://localhost:5001/get_question_id_and_llm_responses', json=data)
+    if response.status_code == 200:
+        response_data = response.json()
+        next_question_id = response_data['next_question_id']
+        llm_reply = response_data['llm_reply']
+
 
     # Process the data (for example, modify the data)
-    modified_data = {
-        'next_question_id': curr_qnnum,
-        'llm_reply': "(this will be the llm's reply to user's response in previous qn. llm will also ask the next qn (Note: when qn id is -1, llm reply as usual but instead of asking next qn, thanks user for participating))"
-    } 
-    
-    # Send the modified data back to the frontend
-    return jsonify(modified_data)
+        modified_data = {
+            'next_question_id': next_question_id,
+            'llm_reply': llm_reply
+        } 
+        # Send the modified data back to the frontend
+        return jsonify(modified_data)
+    else:
+        # Print error message if API response is not successful
+        print("Error:", response.status_code)
 
 if __name__ == '__main__':
     app.run(debug=True)

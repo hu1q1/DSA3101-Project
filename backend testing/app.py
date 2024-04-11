@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 
 # Define a Flask route to handle POST requests
-@app.route("/initialise_survey", methods=["POST"])
-def initialise_survey():
+@app.route("/initialise_surveyy", methods=["POST"])
+def initialise_surveyy():
 
     # Call on the function to start the survey and get LLM output for first question
     next_question_id, llm_reply = start_survey()
@@ -23,8 +23,9 @@ def initialise_survey():
 
 
 # Define a Flask route to handle POST requests
-@app.route("/get_question_id_and_llm_response", methods=["POST"])
-def get_question_id_and_llm_response_api():
+@app.route("/get_question_id_and_llm_responses", methods=["POST"])
+def get_question_id_and_llm_responses():
+
     # Extract user response from the request data
     user_response = request.json.get("user_response")
     stage = request.json.get("stage")
@@ -40,4 +41,4 @@ def get_question_id_and_llm_response_api():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int("5000"), debug=False)
+    app.run(host="0.0.0.0", port=int("5001"), debug=True)

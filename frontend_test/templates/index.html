@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Survey</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body> 
+    <div id="pre-survey">
+        <h1>Pantene Persona</h1>
+        <p>Enter a journey across hair products and find out your Persona!</p>
+        <img src="https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png" class="top-image">
+        <button onclick="startSurvey()">Start Survey</button>
+    </div>
+    
+    <div id="survey-container" class="hide">
+        <div id="question"></div>
+        <div id="answers"></div>
+        <button id="next-btn" style="display:none;">Next</button>        
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -17,6 +17,8 @@ services:
       context: ./backend testing
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5001:5001"
+    environment:
+      MYSQL_ROOT_PASSWORD: test
 
   #frontend

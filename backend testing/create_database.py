@@ -31,27 +31,27 @@ def create_database():
 
     # create stage_1 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_1(id INT PRIMARY KEY AUTO_INCREMENT, hair_length VARCHAR(50), hair_type VARCHAR(50), hair_concerns VARCHAR(100), scalp_type VARCHAR(100), scalp_concerns VARCHAR(100), hair_treatment VARCHAR(50))"
+        "CREATE TABLE IF NOT EXISTS Stage_1(id INT PRIMARY KEY AUTO_INCREMENT, hair_length VARCHAR(100), hair_type VARCHAR(100), hair_concerns VARCHAR(100), scalp_type VARCHAR(100), scalp_concerns VARCHAR(100), hair_treatment VARCHAR(100))"
     )
 
     # create stage_2 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_2(id INT PRIMARY KEY AUTO_INCREMENT, wash_frequency VARCHAR(50), hair_products VARCHAR(50), styling_products VARCHAR(50), prod_switch_freq VARCHAR(50), salon_freq VARCHAR(50), hair_goal VARCHAR(50), hair_health_importance VARCHAR(50))"
+        "CREATE TABLE IF NOT EXISTS Stage_2(id INT PRIMARY KEY AUTO_INCREMENT, wash_frequency VARCHAR(100), hair_products VARCHAR(100), styling_products VARCHAR(100), prod_switch_freq VARCHAR(100), salon_freq VARCHAR(100), hair_goal VARCHAR(100), hair_health_importance VARCHAR(100))"
     )
 
     # create stage_3 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_3(id INT PRIMARY KEY AUTO_INCREMENT, pantene_prod VARCHAR(50), pantene_info VARCHAR(50), most_fav_product VARCHAR(100), least_fav_product VARCHAR(100), prod_effectiveness VARCHAR(50), prod_recommend VARCHAR(50), desired_ingredients VARCHAR(50))"
+        "CREATE TABLE IF NOT EXISTS Stage_3(id INT PRIMARY KEY AUTO_INCREMENT, pantene_prod VARCHAR(100), pantene_info VARCHAR(100), most_fav_product VARCHAR(100), least_fav_product VARCHAR(100), prod_effectiveness VARCHAR(100), prod_recommend VARCHAR(100), desired_ingredients VARCHAR(100))"
     )
 
     # create stage_4 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_4(id INT PRIMARY KEY AUTO_INCREMENT, important_factors VARCHAR(50), preferred_price_range VARCHAR(50), purchase_method VARCHAR(50))"
+        "CREATE TABLE IF NOT EXISTS Stage_4(id INT PRIMARY KEY AUTO_INCREMENT, important_factors VARCHAR(100), preferred_price_range VARCHAR(100), purchase_method VARCHAR(100))"
     )
 
     # create stage_0 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_0(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50), age VARCHAR(50), gender VARCHAR(50), stage1_id INT, stage2_id INT, stage3_id INT, stage4_id INT,FOREIGN KEY(stage1_id) REFERENCES Stage_1(id), FOREIGN KEY(stage2_id) REFERENCES Stage_2(id), FOREIGN KEY(stage3_id) REFERENCES Stage_3(id), FOREIGN KEY(stage4_id) REFERENCES Stage_4(id))"
+        "CREATE TABLE IF NOT EXISTS Stage_0(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), age VARCHAR(100), gender VARCHAR(100), stage1_id INT, stage2_id INT, stage3_id INT, stage4_id INT,FOREIGN KEY(stage1_id) REFERENCES Stage_1(id), FOREIGN KEY(stage2_id) REFERENCES Stage_2(id), FOREIGN KEY(stage3_id) REFERENCES Stage_3(id), FOREIGN KEY(stage4_id) REFERENCES Stage_4(id))"
     )
 
     db.commit()
@@ -137,7 +137,7 @@ def update_db(history):
 
     # add to stage_0 table
     mycursor.execute(
-        "INSERT INTO Stage_0(name, age, gender, stage0_id, stage1_id, stage2_id, stage3_id) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+        "INSERT INTO Stage_0(name, age, gender, stage1_id, stage2_id, stage3_id, stage4_id) VALUES (%s,%s,%s,%s,%s,%s,%s)",
         (
             get_r(history, 1),
             get_r(history, 2),
@@ -154,7 +154,3 @@ def update_db(history):
     mycursor.close()
     db.close()
     return
-
-
-# run to create database
-# create_database()

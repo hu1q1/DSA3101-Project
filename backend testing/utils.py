@@ -50,7 +50,7 @@ llm = HuggingFaceEndpoint(
     endpoint_url=ENDPOINT_URL,  # URL of the Hugging Face API endpoint
     task="text-generation",  # Specify the task for the model
     max_new_tokens=250,  # Maximum number of tokens to generate
-    top_k=300, # Top k words to sample
+    top_k=300,  # Top k words to sample
     temperature=1,  # Controls randomness in sampling
     return_full_text=False,  # Specify whether to return the full generated text
     streaming=True,  # Enable streaming mode for efficient processing of long texts
@@ -62,7 +62,9 @@ llm = HuggingFaceEndpoint(
 embedding_model = HuggingFaceEmbeddings(
     model_name="all-MiniLM-L6-v2",  # Name of the pre-trained model to use for embeddings
     model_kwargs={"device": "cpu"},  # Specify device for inference (CPU in this case)
-    encode_kwargs={"normalize_embeddings": False},  # Specify if embeddings should be normalized
+    encode_kwargs={
+        "normalize_embeddings": False
+    },  # Specify if embeddings should be normalized
 )
 
 
@@ -80,7 +82,9 @@ def get_vectorstore(stage: int):
     """
     if stage == 0:
         db = FAISS.load_local(
-            "stage_0_questions", embedding_model, allow_dangerous_deserialization=True,
+            "stage_0_questions",
+            embedding_model,
+            allow_dangerous_deserialization=True,
         )
     elif stage == 1:
         db = FAISS.load_local(
@@ -171,7 +175,8 @@ def get_rag_chain(retriever):
         RunnableParallel: The RAG chain for generating follow-up questions.
     """
     # General prompt for all questions
-    prompt = ChatPromptTemplate.from_template("""
+    prompt = ChatPromptTemplate.from_template(
+        """
         [INST] As a friendly survey interface assistant, your task is to respond to the user's survey response in a personalized and friendly manner but do not ask any questions here.
         Additionally, ask the follow-up question provided below. Do not provide options.
     
@@ -274,7 +279,9 @@ def invoke_rag_chain(
             - 'docs' (List[Document]): List of documents related to the response.
             - 'query' (str): The query used for generating the response.
     """
-    output = {}  # Initialize output dictionary to store generated response and other information
+    output = (
+        {}
+    )  # Initialize output dictionary to store generated response and other information
 
     # Iterate over chunks of data from the RAG chain
     for chunk in rag_chain.stream(
@@ -326,8 +333,12 @@ def get_llm_outputs(rag_chain, user_response: str, previous_question: str):
 
     # Extract relevant information
     llm_reply = output["answer"]  # LLM reply to output to frontend
-    next_question_document = output["docs"][0]  # Document of the next question asked by LLM
-    next_question_id = next_question_document.metadata["id"]  # ID of the next question asked by LLM
+    next_question_document = output["docs"][
+        0
+    ]  # Document of the next question asked by LLM
+    next_question_id = next_question_document.metadata[
+        "id"
+    ]  # ID of the next question asked by LLM
 
     return llm_reply, next_question_document, next_question_id
 
@@ -437,7 +448,8 @@ def generate_first_question(question: str) -> str:
     Returns:
         str: The generated prompt including the first question.
     """
-    prompt = ChatPromptTemplate.from_template("""
+    prompt = ChatPromptTemplate.from_template(
+        """
         [INST] Welcome the survey respondent to my survey on hair routines and hair products in a friendly and cheerful language. Ask the first question given:
 
         # Question:
@@ -461,7 +473,8 @@ def generate_end_survey_msg(user_response: str, question: str) -> str:
     Returns:
         str: The generated closing message.
     """
-    prompt = ChatPromptTemplate.from_template("""
+    prompt = ChatPromptTemplate.from_template(
+        """
         [INST] Respond kindly to the user's input to the given question below. Do not ask further questions at this stage. Finally, thank the survey participant for their participation warmly in a clear and exaggerated tone.
 
         # User Response:
@@ -470,14 +483,15 @@ def generate_end_survey_msg(user_response: str, question: str) -> str:
         {question}
 
         Reply: [/INST]"""
-                                            
     )
     chain = prompt | llm | StrOutputParser()
     output = chain.invoke({"response": user_response, "question": question})
     return output
 
+
 def evaluate_response(user_response: str, question: str) -> dict:
-    prompt = ChatPromptTemplate.from_template("""
+    prompt = ChatPromptTemplate.from_template(
+        """
         [INST] Evaluate whether a follow-up question is necessary based on the user's response to the given question. Provide a "Yes" if a follow-up question is necessary or "No" otherwise, along with a confidence score between 0.0 and 1.0, and the reasoning. Your response should be in the form of a JSON object with the keys "Assessment" and "Confidence" and "Reason".
 
         # User Response:
@@ -491,6 +505,7 @@ def evaluate_response(user_response: str, question: str) -> dict:
     chain = prompt | llm | JsonOutputParser()
     output = chain.invoke({"response": user_response, "question": question})
     return output
+
 
 def generateFollowUp(user_response: str, question: str):
     prompt = ChatPromptTemplate.from_template(
@@ -526,7 +541,7 @@ def start_survey():
             "question": ["What is your name?"],
             "llm_question": [first_question],
             "user_response": [""],
-            "stage": [0]
+            "stage": [0],
         }
     )
     history.to_json("history.json", orient="records")
@@ -544,7 +559,9 @@ def end_survey(history: pd.DataFrame) -> str:
     end_message = generate_end_survey_msg(user_response, last_question)
 
     # TO DO: Save survey history into mysql database
-    
+    history = history.to_dict(orient="records")
+    create_database()
+    update_db(history)
 
     # Remove created files and directories during the survey
     if os.path.exists("stage_0_questions"):
@@ -587,7 +604,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
         if needFollowUp:
 
             # Check if already followed up: allow only one follow up question
-            if os.path.exists('clarify.txt'):
+            if os.path.exists("clarify.txt"):
                 os.remove("clarify.txt")
             else:
                 with open("clarify.txt", "w") as file:
@@ -600,7 +617,15 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
                 prev_question = history.loc[history.index[-1], "question"]
 
                 # Saving follow up question to history
-                new_row = pd.DataFrame({"id": [prev_question_id], "question": [prev_question], "llm_question": [follow_up_question], "user_response": [""], "stage": stage})
+                new_row = pd.DataFrame(
+                    {
+                        "id": [prev_question_id],
+                        "question": [prev_question],
+                        "llm_question": [follow_up_question],
+                        "user_response": [""],
+                        "stage": stage,
+                    }
+                )
                 history = pd.concat([history, new_row], ignore_index=True)
                 history.to_json("history.json", orient="records")
 
@@ -640,7 +665,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
             "question": [next_question_document.page_content],
             "llm_question": [llm_reply],
             "user_response": [""],
-            'stage': [next_question_document.metadata['stage']]
+            "stage": [next_question_document.metadata["stage"]],
         }
     )
     history = pd.concat([history, new_row], ignore_index=True)

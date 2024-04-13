@@ -558,7 +558,7 @@ def end_survey(history: pd.DataFrame) -> str:
     user_response = history.loc[history.index[-1], "user_response"]
     end_message = generate_end_survey_msg(user_response, last_question)
 
-    # TO DO: Save survey history into mysql database
+    # Save survey history into mysql database
     history = history.to_dict(orient="records")
     create_database()
     update_db(history)

@@ -10,8 +10,8 @@ stage3 = [24,25,26]
 
 
 # API endpoint URLs
-start_survey_url = 'http://localhost:5000/initialise_surveyy'
-next_question_url = 'http://localhost:5000/get_question_id_and_llm_responses'
+start_survey_url = 'http://localhost:5001/initialise_surveyy'
+next_question_url = 'http://localhost:5001/get_question_id_and_llm_responses'
 
 
 # Start survey if prompted

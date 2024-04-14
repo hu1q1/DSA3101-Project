@@ -10,8 +10,8 @@ stage3 = [24,25,26]
 
 
 # API endpoint URLs
-start_survey_url = 'http://localhost:5000/initialise_survey'
-next_question_url = 'http://localhost:5000/get_question_id_and_llm_response'
+start_survey_url = 'http://localhost:5000/initialise_surveyy'
+next_question_url = 'http://localhost:5000/get_question_id_and_llm_responses'
 
 
 # Start survey if prompted
@@ -54,7 +54,9 @@ if noError:
             elif next_question_id in stage2:
                 data = {'user_response': user_response, 'stage': 3} 
             elif next_question_id in stage3:
-                data = {'user_response': user_response, 'stage': 4}       
+                data = {'user_response': user_response, 'stage': 4}
+        else:
+            break  
 
 else:
     # Print error message if API response is not successful

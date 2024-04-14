@@ -18,8 +18,8 @@ def get_hist():
 def create_database():
     # change port number as required
     db = mysql.connector.connect(
-        host="localhost",
-        port=3307,
+        host="test-mysql",
+        port=3306,
         user="root",
         password=mysql_root_password,
     )
@@ -74,8 +74,8 @@ def get_r(hist, id):
 def update_db(history):
     # connect to database
     db = mysql.connector.connect(
-        host="localhost",
-        port=3307,
+        host="test-mysql",
+        port=3306,
         user="root",
         password=mysql_root_password,
     )

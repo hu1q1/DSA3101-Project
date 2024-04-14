@@ -623,7 +623,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
                         "question": [prev_question],
                         "llm_question": [follow_up_question],
                         "user_response": [""],
-                        "stage": stage,
+                        "stage": [stage],
                     }
                 )
                 history = pd.concat([history, new_row], ignore_index=True)

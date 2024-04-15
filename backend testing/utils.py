@@ -475,7 +475,7 @@ def generate_end_survey_msg(user_response: str, question: str) -> str:
     """
     prompt = ChatPromptTemplate.from_template(
         """
-        [INST] Respond kindly to the user's input to the given question below. Do not ask further questions at this stage. Finally, thank the survey participant for their participation warmly in a clear and exaggerated tone.
+        [INST] Respond kindly to the user's response in relation to the given question. Do not ask any questions. Finally, thank the survey participant for their participation warmly in a clear and exaggerated tone.
 
         # User Response:
         {response}
@@ -490,28 +490,50 @@ def generate_end_survey_msg(user_response: str, question: str) -> str:
 
 
 def evaluate_response(user_response: str, question: str) -> dict:
-    prompt = ChatPromptTemplate.from_template(
-        """
-        [INST] Evaluate whether a follow-up question is necessary based on the user's response to the given question. Provide a "Yes" if a follow-up question is necessary or "No" otherwise, along with a confidence score between 0.0 and 1.0, and the reasoning. Your response should be in the form of a JSON object with the keys "Assessment" and "Confidence" and "Reason".
+    """
+    Evaluate whether a follow-up question is necessary based on the user's response to the given question. 
 
-        # User Response:
-        {response}
+    Parameters:
+        - user_response (str): The user's response to the given question.
+        - question (str): The question to which the user is responding.
 
-        # Question:
-        {question}
+    Returns:
+        dict: A JSON object containing the assessment ("Assessment"), confidence score ("Confidence"), and reasoning ("Reason") based on the evaluation of the user's response.
+    """
+    try: 
+        prompt = ChatPromptTemplate.from_template(
+            """
+            [INST] Evaluate whether a follow-up question is necessary based on the user's response to the given question. Provide a "Yes" if a follow-up question is necessary or "No" otherwise, along with a confidence score between 0.0 and 1.0, and the reasoning. Your response should be in the form of a JSON object with the keys "Assessment" and "Confidence" and "Reason".
 
-        [/INST]"""
-    )
-    chain = prompt | llm | JsonOutputParser()
-    output = chain.invoke({"response": user_response, "question": question})
+            # User Response:
+            {response}
+
+            # Question:
+            {question}
+
+            [/INST]"""
+        )
+        chain = prompt | llm | JsonOutputParser()
+        output = chain.invoke({"response": user_response, "question": question})
+    except:
+        output = {"Assessment": "Yes"}
     return output
 
 
 def generateFollowUp(user_response: str, question: str):
+    """
+    Provide a follow-up question based on the survey user's response to the given question.
+
+    Parameters:
+        - user_response (str): The user's response to the given question.
+        - question (str): The question to which the user is responding.
+
+    Returns:
+        str: The generated follow-up question.
+    """
     prompt = ChatPromptTemplate.from_template(
         """
-        [INST] You are a follow-up question generator. You are to provide a follow up question based on the given the survey user response to the question asked.
-        In clear and friendly tone and language, provide the follow-up question.
+        [INST] You are a follow-up question generator. You are to provide a follow up question based on the given the survey user response to the question asked. In clear and friendly tone and language, provide the follow-up question.
         
         # User Response:
         {response}

@@ -458,6 +458,13 @@ function showStageCompletionImage(next_stage_qn, next_question_id) {
     newStageMascot.src = "https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png";
     newStageMascot.alt = 'new stage mascot'; // Set alt text for accessibility
     answersContainer.appendChild(newStageMascot);
+
+    /*
+    const newStageMascot = document.createElement('img');
+    newStageMascot.src = getMascotImageUrl(currentStage + 1); // Get the URL for the mascot image of the next stage
+    newStageMascot.alt = 'new stage mascot'; // Set alt text for accessibility
+    answersContainer.appendChild(newStageMascot);
+    */
     
     //set up for the following stage
     currentStage++;
@@ -467,6 +474,28 @@ function showStageCompletionImage(next_stage_qn, next_question_id) {
         renderQuestion(next_stage_qn, next_question_id);
         }; 
 }
+
+/*
+function getMascotImageUrl(stage) {
+    let imageURL;
+    switch(stage) {
+        case 1:
+            imageURL = 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png'; //image completing stage 0
+            break;
+        case 2:
+            imageURL = 'https://pororoparksg.com/wp-content/uploads/2022/08/10-1.png'; //image completing stage 1
+            break;
+        case 3:
+            imageURL = 'https://pororoparksg.com/wp-content/uploads/2022/08/9-1.png'; //image completing stage 2
+            break;
+        case 4:
+            imageURL = 'https://pororoparksg.com/wp-content/uploads/2022/08/11-1.png'; //image completing stage 3
+            break;
+        // default:imageURL = 'default_mascot_image.jpg'; // Default image if stage is not recognized 
+    }
+    return imageURL;
+}
+*/
 
 function showSurveyCompletionPage(llm_reply) {
     console.log('Survey complete. Showing final result...');

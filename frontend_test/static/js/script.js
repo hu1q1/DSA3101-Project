@@ -8,6 +8,8 @@ const stage3 = [24,25,26];
 console.log(presurveystage.includes(1));   // DEBUG //
 
 let responses = []; // Store all responses here
+// let personality = [];
+// let finalPersona = '';
 
 // Predefined answers including images for reference
 const mcq = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,21,24,25]
@@ -339,9 +341,49 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
         // proceed to submit answer 
         nextButton.onclick = () => {
             submitAnswer(document.getElementById('userInput').value.trim(), currentStage);
+            // addPersona(document.getElementById('userInput').value.trim(), qn_index);
         };
     }
 }
+
+/*
+function addPersona(answer, qnNo) {
+    if ((answer === 'Every few months' || answer === 'Every year') && qnNo === 13) {
+        personality.push('Blue');
+        console.log(`Persona added: Blue, Current persona: ${personality}`);
+    } else if ((answer === 'Hair mask' || answer === 'Leave-in treatments') && qnNo === 11) {
+        personality.push('Green');
+        console.log(`Persona added: Green, Current persona: ${personality}`);
+    } else if ((answer === '2-3 times per day' || answer === 'Once per day') && qnNo === 10) {
+        personality.push('Yellow');
+        console.log(`Persona added: Yellow, Current persona: ${personality}`);
+    } else if ((answer === 'Word of mouth' || answer === 'Retail shops') && qnNo === 18) {
+        personality.push('Red');
+        console.log(`Persona added: Red, Current persona: ${personality}`);
+    } else if ((answer === 'Colored' || answer === 'Bleached') && qnNo === 9) {
+        personality.push('Purple');
+        console.log(`Persona added: Purple, Current persona: ${personality}`);
+    }
+}
+
+function decidePersona(p) {
+    if (p.length === 0) {
+        finalPersona = 'Rainbow';
+        console.log(`Final Persona: Rainbow`);
+    } else {
+        const randomIndex = Math.floor(Math.random() * p.length);
+        finalPersona = p[randomIndex];
+        console.log(`Final Persona: ${finalPersona}`);
+    }
+}
+
+function displayResult(persona) {
+    const resultImage = document.createElement('img');
+    if (persona === "Blue") {
+        resultImage.src = "";
+    } 
+}
+*/
 
 function submitAnswer(answer, stageNumber) {
     console.log(`Submitted: Stage ${stageNumber}, Answer: ${answer}`);
@@ -428,6 +470,8 @@ function showStageCompletionImage(next_stage_qn, next_question_id) {
 
 function showSurveyCompletionPage(llm_reply) {
     console.log('Survey complete. Showing final result...');
+    // decidePersona(personality);
+    // displayResult(finalPersona);
     // Display the final result here
     // This part of the code would ideally replace the survey with a final message or result display
     document.getElementById('survey-container').innerHTML = llm_reply//'<p>Thank you for participating in our survey!</p>';

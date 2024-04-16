@@ -295,15 +295,8 @@ def invoke_rag_chain(
             # Update output dictionary with data from the current chunk
             if key not in output:
                 output[key] = chunk[key].strip() if key == "answer" else chunk[key]
-            # if key == 'answer':
-            # new_token = chunk[key]
-            # yield new_token
-            # output[key] += new_token
             else:
                 output[key] += chunk[key]
-            # Print the generated answer if available
-            # if key == "answer":
-            #     print(chunk[key], end="", flush=True)
 
     return output  # Return the output dictionary containing the generated response and other information
 
@@ -547,6 +540,29 @@ def generateFollowUp(user_response: str, question: str):
     output = chain.invoke({"response": user_response, "question": question})
     return output
 
+def generate_stage3_first_question(question: str) -> str:
+    """
+    Generates the first question for stage 3 of the survey.
+
+    Args:
+        question (str): The survey question to be asked.
+
+    Returns:
+        str: The generated question in a friendly and cheerful language without options.
+    """
+    prompt = ChatPromptTemplate.from_template(
+        """
+        [INST] In a friendly and cheerful language, ask the survey question given below. Do not add options.
+
+        # Question:
+        {question}
+
+        [/INST]"""
+    )
+    chain = prompt | llm | StrOutputParser()
+    output = chain.invoke({"question": question})
+    return output
+
 
 # Function to start the survey
 def start_survey():
@@ -663,8 +679,31 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
         if stage == 4:
             # Generate end message
             llm_reply = end_survey(history)
+            
             # Return question id of -1 to frontend to signify end of survey
             return -1, llm_reply
+        
+        # If survey is at stage 2, ask first question of stage 3
+        if stage == 2:
+            # Generate LLM-based question
+            stage_3_first_question = "Which of the following Pantene product series (collections) are you aware of?"
+            llm_reply = generate_stage3_first_question(stage_3_first_question)
+            
+            # Saving the question asked to history
+            new_row = pd.DataFrame(
+                {
+                    "id": [17],
+                    "question": [stage_3_first_question],
+                    "llm_question": [llm_reply],
+                    "user_response": [""],
+                    "stage": [3],
+                }
+            )
+            history = pd.concat([history, new_row], ignore_index=True)
+            history.to_json("history.json", orient="records")
+            
+            # Return question id of 17 to frontend to signify start of stage 3 survey
+            return 17, llm_reply
 
         stage += 1
         db = get_vectorstore(stage)

@@ -26,32 +26,32 @@ def create_database():
     mycursor = db.cursor()
 
     # create database
-    mycursor.execute("CREATE DATABASE IF NOT EXISTS testdatabase")
-    mycursor.execute("USE testdatabase")
+    mycursor.execute("CREATE DATABASE IF NOT EXISTS Surveydata")
+    mycursor.execute("USE Surveydata")
 
     # create stage_1 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_1(id INT PRIMARY KEY AUTO_INCREMENT, hair_length VARCHAR(100), hair_type VARCHAR(100), hair_concerns VARCHAR(100), scalp_type VARCHAR(100), scalp_concerns VARCHAR(100), hair_treatment VARCHAR(100))"
+        "CREATE TABLE IF NOT EXISTS Stage_1(id INT PRIMARY KEY AUTO_INCREMENT, hair_length ENUM('Short','Medium','Long'), hair_type VARCHAR(100), hair_concerns VARCHAR(100), scalp_type ENUM('Dry','Normal','Oily'), scalp_concerns VARCHAR(100), hair_treatment VARCHAR(100))"
     )
 
     # create stage_2 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_2(id INT PRIMARY KEY AUTO_INCREMENT, wash_frequency VARCHAR(100), hair_products VARCHAR(100), styling_products VARCHAR(100), prod_switch_freq VARCHAR(100), salon_freq VARCHAR(100), hair_goal VARCHAR(100), hair_health_importance VARCHAR(100))"
+        "CREATE TABLE IF NOT EXISTS Stage_2(id INT PRIMARY KEY AUTO_INCREMENT, wash_frequency VARCHAR(100), hair_products VARCHAR(100), styling_products VARCHAR(100), prod_switch_freq ENUM('Every few months', 'Every year', 'Every few years', 'I do not switch'), salon_freq ENUM('Every few weeks', 'Every few months', 'Once a year', 'I do not visit'), hair_goal VARCHAR(100), hair_health_importance ENUM('1','2','3','4','5'))"
     )
 
     # create stage_3 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_3(id INT PRIMARY KEY AUTO_INCREMENT, pantene_prod VARCHAR(100), pantene_info VARCHAR(100), most_fav_product VARCHAR(100), least_fav_product VARCHAR(100), prod_effectiveness VARCHAR(100), prod_recommend VARCHAR(100), desired_ingredients VARCHAR(100))"
+        "CREATE TABLE IF NOT EXISTS Stage_3(id INT PRIMARY KEY AUTO_INCREMENT, pantene_prod ENUM('Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection','Nutrient blend collection'), pantene_info VARCHAR(100), most_fav_product VARCHAR(200), least_fav_product VARCHAR(200), prod_effectiveness ENUM('1','2','3','4','5'), prod_recommend VARCHAR(200), prod_improvements VARCHAR(200))"
     )
 
     # create stage_4 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_4(id INT PRIMARY KEY AUTO_INCREMENT, important_factors VARCHAR(100), preferred_price_range VARCHAR(100), purchase_method VARCHAR(100))"
+        "CREATE TABLE IF NOT EXISTS Stage_4(id INT PRIMARY KEY AUTO_INCREMENT, important_factors ENUM('Natural ingredients', 'Fragrance', 'Celebrity endorsements or influencer recommendations', 'Specific hair concerns', 'Price', 'Multi-functional benefits', 'Eco-friendly or sustainable packaging', 'Hair stylists for salon professionals', 'Advertising campaigns or promotions'), preferred_price_range ENUM('Under $10', '$10-$30', '$30-$100', 'Above $100'), purchase_method VARCHAR(200))"
     )
 
     # create stage_0 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_0(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), age VARCHAR(100), gender VARCHAR(100), stage1_id INT, stage2_id INT, stage3_id INT, stage4_id INT,FOREIGN KEY(stage1_id) REFERENCES Stage_1(id), FOREIGN KEY(stage2_id) REFERENCES Stage_2(id), FOREIGN KEY(stage3_id) REFERENCES Stage_3(id), FOREIGN KEY(stage4_id) REFERENCES Stage_4(id))"
+        "CREATE TABLE IF NOT EXISTS Stage_0(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), age ENUM('18-24','25-34','35-44','>44'), gender ENUM('Male','Female','Non-binary','Prefer not to say'), stage1_id INT, stage2_id INT, stage3_id INT, stage4_id INT,FOREIGN KEY(stage1_id) REFERENCES Stage_1(id), FOREIGN KEY(stage2_id) REFERENCES Stage_2(id), FOREIGN KEY(stage3_id) REFERENCES Stage_3(id), FOREIGN KEY(stage4_id) REFERENCES Stage_4(id))"
     )
 
     db.commit()
@@ -82,7 +82,7 @@ def update_db(history):
     mycursor = db.cursor()
 
     # add to database
-    mycursor.execute("USE testdatabase")
+    mycursor.execute("USE Surveydata")
 
     # add to stage_1 table
     mycursor.execute(
@@ -115,7 +115,7 @@ def update_db(history):
 
     # add to stage_3 table
     mycursor.execute(
-        "INSERT INTO Stage_3(pantene_prod, pantene_info, most_fav_product, least_fav_product, prod_effectiveness, prod_recommend, desired_ingredients) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+        "INSERT INTO Stage_3(pantene_prod, pantene_info, most_fav_product, least_fav_product, prod_effectiveness, prod_recommend, prod_improvements) VALUES (%s,%s,%s,%s,%s,%s,%s)",
         (
             get_r(history, 17),
             get_r(history, 18),

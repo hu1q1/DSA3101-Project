@@ -26,11 +26,11 @@ stage_2_questions = [
         {'id': 16, 'question': "How important is hair health to you?", "check_user_response": 0},
 ]
 stage_3_questions = [
-        {'id': 17, 'question': "Which of the following Pantene product series (collections) are you aware of?", "check_user_response": 0},# TO DO: fixed this question to be the start
+        #{'id': 17, 'question': "Which of the following Pantene product series (collections) are you aware of?", "check_user_response": 0},
         {'id': 18, 'question': "From where did you know pantene?", "check_user_response": 0},
         {'id': 19, 'question': "What is your favorite pantene product and what do you like about it?", "check_user_response": 0},
         {'id': 20, 'question': "what is your least favorite pantene product and what do you dislike about it?", "check_user_response": 0},
-        {'id': 21, 'question': "How would you rate the overall effectiveness of your favourite Pantene product? (scale: 1-10)", "check_user_response": 0}, # TO DO: check if can ask after q19
+        {'id': 21, 'question': "How would you rate the overall effectiveness of your favourite Pantene product? (scale: 1-5)", "check_user_response": 0},
         {'id': 22, 'question': "Would you recommend your current hair products to others? Why?", "check_user_response": 1},
         {'id': 23, 'question': "What hair product improvements would you like to see in the future?", "check_user_response": 1},
 ]

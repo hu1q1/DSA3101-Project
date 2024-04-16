@@ -22,3 +22,11 @@ services:
       MYSQL_ROOT_PASSWORD: test
 
   #frontend
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend_test
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+      

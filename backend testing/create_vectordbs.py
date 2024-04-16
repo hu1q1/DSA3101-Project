@@ -23,7 +23,7 @@ stage_2_questions = [
         {'id': 13, 'question': "How often do you switch hair product brands?", "check_user_response": 0},
         {'id': 14, 'question': "How often do you visit hair salons or barber shops?", "check_user_response": 0},
         {'id': 15, 'question': "What is your ideal hair goal?", "check_user_response": 0},
-        {'id': 16, 'question': "How important is hair health to you?", "check_user_response": 0},
+        {'id': 16, 'question': "How important is hair health to you? (scale: 1-5)", "check_user_response": 0},
 ]
 stage_3_questions = [
         #{'id': 17, 'question': "Which of the following Pantene product series (collections) are you aware of?", "check_user_response": 0},

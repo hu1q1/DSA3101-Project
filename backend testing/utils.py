@@ -492,8 +492,9 @@ def generate_end_survey_msg(user_response: str, question: str) -> str:
 
         Here are the details:
 
-        User's Response: {response}
-        Survey Question: {question}
+        # User's Response: {response}
+        # Survey Question: {question}
+        
         Your thoughtful reply and warm appreciation:
         [/INST]"""
     )

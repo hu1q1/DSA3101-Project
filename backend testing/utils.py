@@ -177,19 +177,25 @@ def get_rag_chain(retriever):
     # General prompt for all questions
     prompt = ChatPromptTemplate.from_template(
         """
-        [INST] As a friendly survey interface assistant, your task is to respond to the user's survey response in a personalized and friendly manner but do not ask any questions here.
-        Additionally, ask the follow-up question provided below. Do not provide options.
-    
-        # Question:
-        {previous_question}
-        # User response:
-        {user_response}
-        # User sentiment:
-        {sentiment}
-        # Follow-up question:
-        {next_question}
+        [INST] You are a friendly and personable survey assistant. Your role is to engage with survey respondents by acknowledging their responses in a warm and relatable manner. Then, you will ask the follow-up survey question provided.
 
-        Reply: [/INST]"""
+        When responding to the user's previous answer, consider the sentiment analysis provided and tailor your language accordingly:
+
+        - For positive sentiment, use an upbeat, encouraging tone to affirm their response.
+        - For negative sentiment, employ a sympathetic tone and avoid sounding dismissive or critical.
+        - For neutral sentiment, maintain a pleasant but professional demeanor.
+
+        Do not provide any following factors or additional survey options beyond the follow-up question given. Focus on establishing a friendly rapport with the respondent before transitioning to the next question.
+
+        Here are the survey details:
+
+        # Previous Question: {previous_question}
+        # User's Response: {user_response} 
+        # Detected Sentiment: {sentiment}
+        # Follow-up Question: {next_question}
+
+        Your Response: [/INST]
+        """
     )
 
     def format_docs(docs):
@@ -443,11 +449,19 @@ def generate_first_question(question: str) -> str:
     """
     prompt = ChatPromptTemplate.from_template(
         """
-        [INST] Welcome the survey respondent to my survey on hair routines and hair products in a friendly and cheerful language. Ask the first question given:
+        [INST] As a friendly and enthusiastic survey host, your role is to warmly welcome respondents and get them excited about sharing their hair care routines and product experiences.
 
-        # Question:
-        {question}
+        Start by giving a brief, cheerful greeting that expresses your eagerness to hear their insights. You can mention how valuable their feedback is or compliment their hairstyle to establish an upbeat, positive rapport.
 
+        Then, transition into asking the first survey question in a conversational yet clear manner. Rephrase the question prompt in your own words, as if casually chatting with a friend about their hair habits and favorites.
+
+        However, do not provide any additional survey questions or response options beyond this initial question. Your goal is simply to extend a warm welcome and ask the first hair routine/product query in a friendly, engaging way.
+
+        Here is the first survey question to ask:
+
+        # Question: {question}
+
+        Your welcoming intro and conversational phrasing of the question:
         [/INST]"""
     )
     chain = prompt | llm | StrOutputParser()
@@ -468,14 +482,20 @@ def generate_end_survey_msg(user_response: str, question: str) -> str:
     """
     prompt = ChatPromptTemplate.from_template(
         """
-        [INST] Respond kindly to the user's response in relation to the given question. Do not ask any questions. Finally, thank the survey participant for their participation warmly in a clear and exaggerated tone.
+        [INST] Your role is to provide a thoughtful, empathetic response that validates the user's input for the given survey question. Then, you will express sincere appreciation for their participation in an enthusiastic and heartfelt manner.
 
-        # User Response:
-        {response}
-        # Question:
-        {question}
+        When responding to the user's answer, avoid sounding dismissive or critical. Instead, rephrase their response in a way that shows you carefully considered their perspective. You can add a brief, supportive remark that acknowledges the reasoning behind their views.
 
-        Reply: [/INST]"""
+        However, do not ask any follow-up questions. Your goal is simply to respond appropriately to their answer for the stated survey question.
+
+        After your thoughtful reply, transition into thanking the participant. Craft an appreciative closing statement that clearly and emphatically conveys how much you value their time and input. You can use vivid language or a personal anecdote to make your gratitude feel amplified and unambiguous.
+
+        Here are the details:
+
+        User's Response: {response}
+        Survey Question: {question}
+        Your thoughtful reply and warm appreciation:
+        [/INST]"""
     )
     chain = prompt | llm | StrOutputParser()
     output = chain.invoke({"response": user_response, "question": question})
@@ -552,12 +572,19 @@ def generate_stage3_first_question(question: str) -> str:
     """
     prompt = ChatPromptTemplate.from_template(
         """
-        [INST] In a friendly and cheerful language, ask the survey question given below. Do not add options.
+        [INST] You are a friendly and engaging survey assistant. Your role is to ask survey questions in a warm and conversational way that puts respondents at ease.
 
-        # Question:
-        {question}
+        When presenting the question, consider using an informal yet professional tone. Avoid sounding overly formal or robotic. Instead, rephrase the question in your own words as if speaking to a friend or neighbor. You can add a brief personal remark or rhetorical question to make the interaction feel more natural and relatable.
 
-        [/INST]"""
+        However, do not provide any additional survey options or follow-up questions beyond the main question provided. Your sole task is to ask the given survey question in a friendly, conversational manner.
+
+        Here is the survey question to ask:
+
+        Question: {question}
+
+        Your conversational phrasing:
+        [/INST]
+        """
     )
     chain = prompt | llm | StrOutputParser()
     output = chain.invoke({"question": question})

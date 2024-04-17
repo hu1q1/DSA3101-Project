@@ -1,0 +1,14 @@
+{
+    "name": "frontend-app",
+    "version": "1.0.0",
+    "description": "Simple frontend web application",
+    "scripts": {
+      "start": "echo 'No start script needed for a static frontend app'",
+      "build": "echo 'No build script needed for a static frontend app'"
+    },
+    "author": "Your Name",
+    "license": "MIT"
+  }
+  
+
+  

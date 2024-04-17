@@ -682,30 +682,52 @@ function showSurveyCompletionPage(llm_reply) {
     document.getElementById('survey-container').classList.remove('hide');
 
     console.log('Survey complete. Showing final result...');
+    // This part of the code to thank the user
+    const questionContainer = document.getElementById('question');
+    questionContainer.innerHTML = llm_reply;
+    //document.getElementById('survey-container').innerHTML = llm_reply//'<p>Thank you for participating in our survey!</p>';
 
-    decidePersona(personality);
-    const finalStageMascot = document.createElement('img');
+    //next button to show results page
+    const nextButton = document.getElementById('next-btn');
+    const imageContainer = document.getElementById('image');
+    const answersContainer = document.getElementById('answers');
 
-    if (finalPersona === 'Blue') {
-        finalStageMascot.src =  "/static/images/blue.gif";
-    } else if (finalPersona === 'Green') {
-        finalStageMascot.src =  "/static/images/green.gif";
-    } else if (finalPersona === 'Yellow') {
-        finalStageMascot.src =  "/static/images/yellow.gif";
-    } else if (finalPersona === 'Red') {
-        finalStageMascot.src =  "/static/images/red.gif";
-    } else if (finalPersona === 'Purple') {
-        finalStageMascot.src =  "/static/images/purple.gif";
-    } else if (finalPersona === 'Rainbow') {
-        console.log("heloooooo")
-        finalStageMascot.src =  "/static/images/rainbow.gif";
-    } 
+    imageContainer.innerHTML = '';
+    answersContainer.innerHTML = '';
+    nextButton.style.display = 'block';
 
-    // Display the final result here
-    // This part of the code would ideally replace the survey with a final message or result display
-    document.getElementById('survey-container').innerHTML = llm_reply//'<p>Thank you for participating in our survey!</p>';
-    const tryNew = document.getElementById('survey-container');
-    tryNew.appendChild(finalStageMascot);
 
-    // code to display personality
+    nextButton.onclick = () => {
+
+        //clear the llm text and hide next button
+        questionContainer.innerHTML = ''
+        nextButton.style.display = 'none'
+        document.getElementById('survey-container').classList.add('hide');
+
+        //Decide the personality
+        decidePersona(personality);
+        document.getElementById('results-page').classList.remove('hide');
+        const finalStageMascot = document.createElement('img');
+
+        if (finalPersona === 'Blue') {
+            finalStageMascot.src =  "/static/images/blue.gif";
+        } else if (finalPersona === 'Green') {
+            finalStageMascot.src =  "/static/images/green.gif";
+        } else if (finalPersona === 'Yellow') {
+            finalStageMascot.src =  "/static/images/yellow.gif";
+        } else if (finalPersona === 'Red') {
+            finalStageMascot.src =  "/static/images/red.gif";
+        } else if (finalPersona === 'Purple') {
+            finalStageMascot.src =  "/static/images/purple.gif";
+        } else if (finalPersona === 'Rainbow') {
+            finalStageMascot.src =  "/static/images/rainbow.gif";
+        }
+        // Display the final personality result here
+        finalStageMascot.style.width = '400px'; // Set width to 400 pixels
+        finalStageMascot.style.height = 'auto'; // Maintain aspect ratio
+
+        const tryNew = document.getElementById('results-page');
+        tryNew.appendChild(finalStageMascot);
+        }; 
+
 }

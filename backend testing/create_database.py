@@ -31,27 +31,27 @@ def create_database():
 
     # create stage_1 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_1(id INT PRIMARY KEY AUTO_INCREMENT, hair_length ENUM('Short','Medium','Long'), hair_type VARCHAR(100), hair_concerns VARCHAR(100), scalp_type ENUM('Dry','Normal','Oily'), scalp_concerns VARCHAR(100), hair_treatment VARCHAR(100))"
+        "CREATE TABLE IF NOT EXISTS Stage_1(id INT PRIMARY KEY AUTO_INCREMENT, hair_length VARCHAR(300), hair_type VARCHAR(300), hair_concerns VARCHAR(300), scalp_type VARCHAR(300), scalp_concerns VARCHAR(300), hair_treatment VARCHAR(300))"
     )
 
     # create stage_2 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_2(id INT PRIMARY KEY AUTO_INCREMENT, wash_frequency VARCHAR(100), hair_products VARCHAR(100), styling_products VARCHAR(100), prod_switch_freq ENUM('Every few months', 'Every year', 'Every few years', 'I do not switch'), salon_freq ENUM('Every few weeks', 'Every few months', 'Once a year', 'I do not visit'), hair_goal VARCHAR(100), hair_health_importance ENUM('1','2','3','4','5'))"
+        "CREATE TABLE IF NOT EXISTS Stage_2(id INT PRIMARY KEY AUTO_INCREMENT, wash_frequency VARCHAR(300), hair_products VARCHAR(300), styling_products VARCHAR(300), prod_switch_freq VARCHAR(300), salon_freq VARCHAR(300), hair_goal VARCHAR(300), hair_health_importance ENUM('1','2','3','4','5'))"
     )
 
     # create stage_3 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_3(id INT PRIMARY KEY AUTO_INCREMENT, pantene_prod ENUM('Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection','Nutrient blend collection'), pantene_info VARCHAR(100), most_fav_product VARCHAR(200), least_fav_product VARCHAR(200), prod_effectiveness ENUM('1','2','3','4','5'), prod_recommend VARCHAR(200), prod_improvements VARCHAR(200))"
+        "CREATE TABLE IF NOT EXISTS Stage_3(id INT PRIMARY KEY AUTO_INCREMENT, pantene_prod VARCHAR(500), pantene_info VARCHAR(300), most_fav_product VARCHAR(300), least_fav_product VARCHAR(300), prod_effectiveness ENUM('1','2','3','4','5'), prod_recommend VARCHAR(300), prod_improvements VARCHAR(300))"
     )
 
     # create stage_4 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_4(id INT PRIMARY KEY AUTO_INCREMENT, important_factors ENUM('Natural ingredients', 'Fragrance', 'Celebrity endorsements or influencer recommendations', 'Specific hair concerns', 'Price', 'Multi-functional benefits', 'Eco-friendly or sustainable packaging', 'Hair stylists for salon professionals', 'Advertising campaigns or promotions'), preferred_price_range ENUM('Under $10', '$10-$30', '$30-$100', 'Above $100'), purchase_method VARCHAR(200))"
+        "CREATE TABLE IF NOT EXISTS Stage_4(id INT PRIMARY KEY AUTO_INCREMENT, important_factors VARCHAR(300), preferred_price_range VARCHAR(300), purchase_method VARCHAR(300))"
     )
 
     # create stage_0 table
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_0(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), age ENUM('18-24','25-34','35-44','>44'), gender ENUM('Male','Female','Non-binary','Prefer not to say'), stage1_id INT, stage2_id INT, stage3_id INT, stage4_id INT,FOREIGN KEY(stage1_id) REFERENCES Stage_1(id), FOREIGN KEY(stage2_id) REFERENCES Stage_2(id), FOREIGN KEY(stage3_id) REFERENCES Stage_3(id), FOREIGN KEY(stage4_id) REFERENCES Stage_4(id))"
+        "CREATE TABLE IF NOT EXISTS Stage_0(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), age VARCHAR(100), gender VARCHAR(100), stage1_id INT, stage2_id INT, stage3_id INT, stage4_id INT,FOREIGN KEY(stage1_id) REFERENCES Stage_1(id), FOREIGN KEY(stage2_id) REFERENCES Stage_2(id), FOREIGN KEY(stage3_id) REFERENCES Stage_3(id), FOREIGN KEY(stage4_id) REFERENCES Stage_4(id))"
     )
 
     db.commit()

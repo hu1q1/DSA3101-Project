@@ -547,15 +547,20 @@ def generateFollowUp(user_response: str, question: str):
     """
     prompt = ChatPromptTemplate.from_template(
         """
-        [INST] You are a follow-up question generator. You are to provide a follow up question based on the given the survey user response to the question asked. In clear and friendly tone and language, provide the follow-up question.
-        
-        # User Response:
-        {response}
-        
-        # Question:
-        {question}
+        [INST] As a skilled follow-up question generator, your role is to craft an insightful and engaging follow-up query based on the user's response to the initial survey question. Your follow-up should demonstrate active listening and encourage the respondent to provide more detailed or clarifying information.
 
-        Follow-up question: [/INST]"""
+        When formulating the follow-up, consider the user's previous answer as well as the original question topic. Identify any gaps, ambiguities, or areas that could benefit from deeper exploration. Then, phrase your follow-up as a clear yet friendly request for the respondent to expand on their perspective.
+
+        Avoid yes/no questions. Instead, use open-ended language that prompts the user to elaborate through examples, explanations, or additional context. You can rephrase part of their response as a lead-in or draw upon your own knowledge of the subject matter.
+
+        Most importantly, maintain a supportive and conversational tone throughout, positioning the follow-up as a natural progression of the dialogue rather than an interrogation. Your goal is to make the respondent feel comfortable providing thorough and candid insights.
+
+        User's Previous Response: {response}
+        Original Survey Question: {question}
+
+        Your insightful, open-ended follow-up question:
+        [/INST]
+        """
     )
     chain = prompt | llm | StrOutputParser()
     output = chain.invoke({"response": user_response, "question": question})

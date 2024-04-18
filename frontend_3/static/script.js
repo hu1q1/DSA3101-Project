@@ -59,10 +59,11 @@ const predefinedAnswers = {
     6: [
         {
             qn_image: "/static/images/hair_concerns.gif",
-            options: ['Split ends', 'Breakage', 'Thinning', 'Others'],
+            options: ['Split ends', 'Breakage', 'Thinning', 'None', 'Others'],
             'Split ends': null, 
             'Breakage': null,
             'Thinning': null,
+            'None': null,
             'Others': null
         }
     ],
@@ -78,7 +79,7 @@ const predefinedAnswers = {
     8: [
         {
             qn_image: "/static/images/scalp_concerns.gif",
-            options: ['Sensitive', 'Allergies', 'Dandruff', 'Dryness', 'Others'],
+            options: ['Sensitive', 'Allergies', 'Dandruff', 'Dryness', 'None', 'Others'],
             // 'Sensitive': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png',
             // 'Allergies': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png',
             // 'Dandruff': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png',
@@ -89,7 +90,7 @@ const predefinedAnswers = {
     9: [
         {
             qn_image: "/static/images/hair_treatments.gif",
-            options: ['Colored', 'Permed', 'Bleached', 'Others'],
+            options: ['Colored', 'Permed', 'Bleached', 'None', 'Others'],
             // 'Colored': "/static/images/colour.gif",
             // 'Permed': "/static/images/perm.gif",
             // 'Bleached': "/static/images/bleach.gif",
@@ -123,12 +124,13 @@ const predefinedAnswers = {
     12: [
         {
             qn_image: "/static/images/styling_products.gif",
-            options: ['Hair dryer', 'Flat iron', 'Curler', 'Gels & Mousses', 'Serums', 'Others'],
+            options: ['Hair dryer', 'Flat iron', 'Curler', 'Gels & Mousses', 'Serums', 'None', 'Others'],
             'Hair dryer': null,
             'Flat iron': null,
             'Curler': null,
             'Gels & Mousses': null,
             'Serums': null,
+            'None': null,
             'Others': null
         }
     ],
@@ -157,10 +159,11 @@ const predefinedAnswers = {
     15: [
         {
             qn_image: "/static/images/hair_goals.gif",
-            options: ['Volume', 'Shine', 'Smoothness', 'Others'],
+            options: ['Volume', 'Shine', 'Smoothness', 'None', 'Others'],
             'Volume': null,
             'Shine': null,
             'Smoothness': null,
+            'None': null,
             'Others': null
         }
     ],
@@ -182,12 +185,13 @@ const predefinedAnswers = {
     17: [
         {
             qn_image: "/static/images/product_awareness.gif",
-            options: ['Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection','Nutrient blend collection'],
+            options: ['Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection','Nutrient blend collection', 'None'],
             'Micellar series': "/static/images/micellar.gif",
             'Core benefits': "/static/images/core_benefits.gif",
             '3 minutes miracle': "/static/images/3mins.gif",
             'Miracles collection': "/static/images/miracle.gif",
-            'Nutrient blend collection': "/static/images/nutrient_blend.gif"
+            'Nutrient blend collection': "/static/images/nutrient_blend.gif",
+            'None': null
         }
             
     ],

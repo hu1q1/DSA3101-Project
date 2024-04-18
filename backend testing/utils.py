@@ -185,7 +185,7 @@ def get_rag_chain(retriever):
         - For negative sentiment, employ a sympathetic tone and avoid sounding dismissive or critical.
         - For neutral sentiment, maintain a pleasant but professional demeanor.
 
-        Do not provide any following factors or additional survey options beyond the follow-up question given. Focus on establishing a friendly rapport with the respondent before transitioning to the next question.
+        Do not provide any following factors or additional survey options beyond the follow-up question given. Focus on establishing a friendly rapport with the respondent before transitioning to the next question. Keep your entire response to two or less sentences.
 
         Here are the survey details:
 
@@ -451,11 +451,11 @@ def generate_first_question(question: str) -> str:
         """
         [INST] As a friendly and enthusiastic survey host, your role is to warmly welcome respondents and get them excited about sharing their hair care routines and product experiences.
 
-        Start by giving a brief, cheerful greeting that expresses your eagerness to hear their insights. You can mention how valuable their feedback is or compliment their hairstyle to establish an upbeat, positive rapport.
+        Start by giving a brief, cheerful greeting that expresses your eagerness to hear their insights.
 
-        Then, transition into asking the first survey question in a conversational yet clear manner. Rephrase the question prompt in your own words, as if casually chatting with a friend about their hair habits and favorites.
+        Then, transition into asking the first survey question in a conversational yet clear manner. Rephrase the question prompt in your own words, as if casually chatting with a friend about their hair habits and favorites. 
 
-        However, do not provide any additional survey questions or response options beyond this initial question. Your goal is simply to extend a warm welcome and ask the first hair routine/product query in a friendly, engaging way.
+        However, do not provide any additional survey questions or response options beyond this initial question. Your goal is simply to extend a warm welcome and ask the first hair routine/product query in a friendly, engaging way. Keep your entire response to two or less sentences.
 
         Here is the first survey question to ask:
 
@@ -484,11 +484,11 @@ def generate_end_survey_msg(user_response: str, question: str) -> str:
         """
         [INST] Your role is to provide a thoughtful, empathetic response that validates the user's input for the given survey question. Then, you will express sincere appreciation for their participation in an enthusiastic and heartfelt manner.
 
-        When responding to the user's answer, avoid sounding dismissive or critical. Instead, rephrase their response in a way that shows you carefully considered their perspective. You can add a brief, supportive remark that acknowledges the reasoning behind their views.
+        When responding to the user's answer, avoid sounding dismissive or critical. You can add a brief, supportive remark that acknowledges the reasoning behind their views.
 
         However, do not ask any follow-up questions. Your goal is simply to respond appropriately to their answer for the stated survey question.
 
-        After your thoughtful reply, transition into thanking the participant. Craft an appreciative closing statement that clearly and emphatically conveys how much you value their time and input. You can use vivid language or a personal anecdote to make your gratitude feel amplified and unambiguous.
+        After your thoughtful reply, transition into thanking the participant. Give an appreciative closing statement that clearly and emphatically conveys how much you value their time and input. You can use vivid language or a personal anecdote to make your gratitude feel amplified and unambiguous. Keep your entire response to two or less sentences.
 
         Here are the details:
 
@@ -505,7 +505,7 @@ def generate_end_survey_msg(user_response: str, question: str) -> str:
 
 def evaluate_response(user_response: str, question: str) -> dict:
     """
-    Evaluate whether a follow-up question is necessary based on the user's response to the given question. 
+    Evaluate whether a follow-up question is necessary based on the user's response to the given question.
 
     Parameters:
         - user_response (str): The user's response to the given question.
@@ -514,7 +514,7 @@ def evaluate_response(user_response: str, question: str) -> dict:
     Returns:
         dict: A JSON object containing the assessment ("Assessment"), confidence score ("Confidence"), and reasoning ("Reason") based on the evaluation of the user's response.
     """
-    try: 
+    try:
         prompt = ChatPromptTemplate.from_template(
             """
             [INST] Evaluate whether a follow-up question is necessary based on the user's response to the given question. Provide a "Yes" if a follow-up question is necessary or "No" otherwise, along with a confidence score between 0.0 and 1.0, and the reasoning. Your response should be in the form of a JSON object with the keys "Assessment" and "Confidence" and "Reason".
@@ -553,7 +553,7 @@ def generateFollowUp(user_response: str, question: str):
 
         Avoid yes/no questions. Instead, use open-ended language that prompts the user to elaborate through examples, explanations, or additional context. You can rephrase part of their response as a lead-in or draw upon your own knowledge of the subject matter.
 
-        Most importantly, maintain a supportive and conversational tone throughout, positioning the follow-up as a natural progression of the dialogue rather than an interrogation. Your goal is to make the respondent feel comfortable providing thorough and candid insights.
+        Most importantly, maintain a supportive and conversational tone throughout, positioning the follow-up as a natural progression of the dialogue rather than an interrogation. Your goal is to make the respondent feel comfortable providing thorough and candid insights. Keep your entire response to two or less sentences.
 
         User's Previous Response: {response}
         Original Survey Question: {question}
@@ -565,6 +565,7 @@ def generateFollowUp(user_response: str, question: str):
     chain = prompt | llm | StrOutputParser()
     output = chain.invoke({"response": user_response, "question": question})
     return output
+
 
 def generate_stage3_first_question(question: str) -> str:
     """
@@ -582,7 +583,7 @@ def generate_stage3_first_question(question: str) -> str:
 
         When presenting the question, consider using an informal yet professional tone. Avoid sounding overly formal or robotic. Instead, rephrase the question in your own words as if speaking to a friend or neighbor. You can add a brief personal remark or rhetorical question to make the interaction feel more natural and relatable.
 
-        However, do not provide any additional survey options or follow-up questions beyond the main question provided. Your sole task is to ask the given survey question in a friendly, conversational manner.
+        However, do not provide any additional survey options or follow-up questions beyond the main question provided. Your sole task is to ask the given survey question in a friendly, conversational manner. Keep your entire response to two or less sentences.
 
         Here is the survey question to ask:
 
@@ -712,16 +713,16 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
         if stage == 4:
             # Generate end message
             llm_reply = end_survey(history)
-            
+
             # Return question id of -1 to frontend to signify end of survey
             return -1, llm_reply
-        
+
         # If survey is at stage 2, ask first question of stage 3
         if stage == 2:
             # Generate LLM-based question
             stage_3_first_question = "Which of the following Pantene product series (collections) are you aware of?"
             llm_reply = generate_stage3_first_question(stage_3_first_question)
-            
+
             # Saving the question asked to history
             new_row = pd.DataFrame(
                 {
@@ -734,7 +735,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
             )
             history = pd.concat([history, new_row], ignore_index=True)
             history.to_json("history.json", orient="records")
-            
+
             # Return question id of 17 to frontend to signify start of stage 3 survey
             return 17, llm_reply
 

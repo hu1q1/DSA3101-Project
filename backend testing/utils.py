@@ -632,8 +632,9 @@ def end_survey(history: pd.DataFrame) -> str:
 
     # Save survey history into mysql database
     history = history.to_dict(orient="records")
-    create_database()
-    update_db(history)
+    survey_info = get_survey_info(history)
+    initialise_database(survey_info)
+    update_database(survey_info, history)
 
     # Remove created files and directories during the survey
     if os.path.exists("stage_0_questions"):

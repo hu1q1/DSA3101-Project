@@ -14,7 +14,14 @@ def get_hist():
     return hist
 
 
-# creates database
+def get_r(hist, id):
+    value = []
+    for chat in hist:
+        if chat["id"] == id:
+            value.append(chat["user_response"])
+    return ",".join(value)
+
+
 def create_database():
     # change port number as required
     db = mysql.connector.connect(
@@ -27,32 +34,6 @@ def create_database():
 
     # create database
     mycursor.execute("CREATE DATABASE IF NOT EXISTS Surveydata")
-    mycursor.execute("USE Surveydata")
-
-    # create stage_1 table
-    mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_1(id INT PRIMARY KEY AUTO_INCREMENT, hair_length VARCHAR(300), hair_type VARCHAR(300), hair_concerns VARCHAR(300), scalp_type VARCHAR(300), scalp_concerns VARCHAR(300), hair_treatment VARCHAR(300))"
-    )
-
-    # create stage_2 table
-    mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_2(id INT PRIMARY KEY AUTO_INCREMENT, wash_frequency VARCHAR(300), hair_products VARCHAR(300), styling_products VARCHAR(300), prod_switch_freq VARCHAR(300), salon_freq VARCHAR(300), hair_goal VARCHAR(300), hair_health_importance ENUM('1','2','3','4','5'))"
-    )
-
-    # create stage_3 table
-    mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_3(id INT PRIMARY KEY AUTO_INCREMENT, pantene_prod VARCHAR(500), pantene_info VARCHAR(300), most_fav_product VARCHAR(300), least_fav_product VARCHAR(300), prod_effectiveness ENUM('1','2','3','4','5'), prod_recommend VARCHAR(300), prod_improvements VARCHAR(300))"
-    )
-
-    # create stage_4 table
-    mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_4(id INT PRIMARY KEY AUTO_INCREMENT, important_factors VARCHAR(300), preferred_price_range VARCHAR(300), purchase_method VARCHAR(300))"
-    )
-
-    # create stage_0 table
-    mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS Stage_0(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), age VARCHAR(100), gender VARCHAR(100), stage1_id INT, stage2_id INT, stage3_id INT, stage4_id INT,FOREIGN KEY(stage1_id) REFERENCES Stage_1(id), FOREIGN KEY(stage2_id) REFERENCES Stage_2(id), FOREIGN KEY(stage3_id) REFERENCES Stage_3(id), FOREIGN KEY(stage4_id) REFERENCES Stage_4(id))"
-    )
 
     db.commit()
 
@@ -61,18 +42,8 @@ def create_database():
     return
 
 
-# returns the n-th user_response in chat log
-def get_r(hist, id):
-    value = []
-    for chat in hist:
-        if chat["id"] == id:
-            value.append(chat["user_response"])
-    return ",".join(value)
-
-
-# accepts chat log and updates database
-def update_db(history):
-    # connect to database
+def create_user_table(stages):
+    # Connect to MySQL
     db = mysql.connector.connect(
         host="test-mysql",
         port=3306,
@@ -80,77 +51,136 @@ def update_db(history):
         password=mysql_root_password,
     )
     mycursor = db.cursor()
-
-    # add to database
     mycursor.execute("USE Surveydata")
 
-    # add to stage_1 table
-    mycursor.execute(
-        "INSERT INTO Stage_1(hair_length, hair_type, hair_concerns, scalp_type, scalp_concerns, hair_treatment) VALUES (%s,%s,%s,%s,%s,%s)",
-        (
-            get_r(history, 4),
-            get_r(history, 5),
-            get_r(history, 6),
-            get_r(history, 7),
-            get_r(history, 8),
-            get_r(history, 9),
-        ),
-    )
-    stage1_id = mycursor.lastrowid
+    # Generate the SQL query to create the table
+    columns = ", ".join([f"stage_{name} INT" for name in stages])
+    create_table_query = f"CREATE TABLE IF NOT EXISTS Users (id INT PRIMARY KEY AUTO_INCREMENT, {columns})"
 
-    # add to stage_2 table
-    mycursor.execute(
-        "INSERT INTO Stage_2(wash_frequency, hair_products, styling_products, prod_switch_freq, salon_freq, hair_goal, hair_health_importance) VALUES (%s,%s,%s,%s,%s,%s,%s)",
-        (
-            get_r(history, 10),
-            get_r(history, 11),
-            get_r(history, 12),
-            get_r(history, 13),
-            get_r(history, 14),
-            get_r(history, 15),
-            get_r(history, 16),
-        ),
-    )
-    stage2_id = mycursor.lastrowid
+    # Execute the SQL query
+    mycursor.execute(create_table_query)
 
-    # add to stage_3 table
-    mycursor.execute(
-        "INSERT INTO Stage_3(pantene_prod, pantene_info, most_fav_product, least_fav_product, prod_effectiveness, prod_recommend, prod_improvements) VALUES (%s,%s,%s,%s,%s,%s,%s)",
-        (
-            get_r(history, 17),
-            get_r(history, 18),
-            get_r(history, 19),
-            get_r(history, 20),
-            get_r(history, 21),
-            get_r(history, 22),
-            get_r(history, 23),
-        ),
-    )
-    stage3_id = mycursor.lastrowid
-
-    # add to stage_4 table
-    mycursor.execute(
-        "INSERT INTO Stage_4(important_factors, preferred_price_range, purchase_method) VALUES (%s,%s,%s)",
-        (get_r(history, 24), get_r(history, 25), get_r(history, 26)),
-    )
-    stage4_id = mycursor.lastrowid
-
-    # add to stage_0 table
-    mycursor.execute(
-        "INSERT INTO Stage_0(name, age, gender, stage1_id, stage2_id, stage3_id, stage4_id) VALUES (%s,%s,%s,%s,%s,%s,%s)",
-        (
-            get_r(history, 1),
-            get_r(history, 2),
-            get_r(history, 3),
-            stage1_id,
-            stage2_id,
-            stage3_id,
-            stage4_id,
-        ),
-    )
-
+    # Commit changes and close connection
     db.commit()
-
     mycursor.close()
     db.close()
     return
+
+
+def update_user_table(foreign_keys):
+    # Connect to MySQL
+    db = mysql.connector.connect(
+        host="test-mysql",
+        port=3306,
+        user="root",
+        password=mysql_root_password,
+    )
+    mycursor = db.cursor()
+    mycursor.execute("USE Surveydata")
+
+    placeholders = ", ".join(["%s"] * len(foreign_keys))
+    insert_query = f"INSERT INTO Users VALUES (NULL,{placeholders})"
+
+    # Execute the SQL query
+    mycursor.execute(insert_query, foreign_keys)
+
+    # Commit changes and close connection
+    db.commit()
+    mycursor.close()
+    db.close()
+    return
+
+
+def create_table(col_names, table_name):
+    # Connect to MySQL
+    db = mysql.connector.connect(
+        host="test-mysql",
+        port=3306,
+        user="root",
+        password=mysql_root_password,
+    )
+    mycursor = db.cursor()
+    mycursor.execute("USE Surveydata")
+
+    # Generate the SQL query to create the table
+    columns = ", ".join([f"{name} VARCHAR(300)" for name in col_names])
+    create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name} (id INT PRIMARY KEY AUTO_INCREMENT, {columns})"
+
+    # Execute the SQL query
+    mycursor.execute(create_table_query)
+
+    # Commit changes and close connection
+    db.commit()
+    mycursor.close()
+    db.close()
+    return
+
+
+def update_table(table_name, id_list, hist):
+    # Connect to MySQL
+    db = mysql.connector.connect(
+        host="test-mysql",
+        port=3306,
+        user="root",
+        password=mysql_root_password,
+    )
+    mycursor = db.cursor()
+    mycursor.execute("USE Surveydata")
+
+    placeholders = ", ".join(["%s"] * len(id_list))
+    insert_query = f"INSERT INTO {table_name} VALUES (NULL,{placeholders})"
+
+    answers = []
+    for id in id_list:
+        answers.append(get_r(hist, id))
+
+    # Execute the SQL query
+    mycursor.execute(insert_query, answers)
+    row_id = mycursor.lastrowid
+
+    # Commit changes and close connection
+    db.commit()
+    mycursor.close()
+    db.close()
+    return row_id
+
+
+# function that rcreates column names
+def generate_col_names(id_list):
+    return [f"Question_{i}" for i in id_list]
+
+
+def get_survey_info(history):
+    survey_info = {"stages": []}
+    for d in history:
+        stage_num = str(d["stage"])
+        if stage_num not in survey_info["stages"]:
+            survey_info["stages"].append(stage_num)
+            survey_info[stage_num] = [d["id"]]
+        else:
+            if d["id"] not in survey_info[stage_num]:
+                survey_info[stage_num].append(d["id"])
+
+    for key in survey_info.keys():
+        survey_info[key].sort()
+    return survey_info
+
+
+def initialise_database(survey_info):
+    create_database()
+    create_user_table(survey_info["stages"])
+
+
+def update_database(survey_info, history):
+    create_database()
+    create_user_table(survey_info["stages"])
+
+    foreign_keys = []
+    for stage in survey_info["stages"]:
+        table_name = f"stage_{stage}"
+        col_names = generate_col_names(survey_info[stage])
+        create_table(col_names, table_name)
+        row_id = update_table(table_name, survey_info[stage], history)
+        foreign_keys.append(row_id)
+
+    update_user_table(foreign_keys)

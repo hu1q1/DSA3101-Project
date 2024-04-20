@@ -1,17 +1,16 @@
-body{
+body {
     margin: 0;
     padding: 0;
     font-family: 'Platypi', sans-serif;
-    background-color: #E8E9D7; 
+    background-color: #f0f1de; 
     font-size: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 1000;
-    overflow-x: hidden; 
-    overflow-y: auto;
-} 
+}
 
+/* -------------- FOR SURVEY -------------- */
 #big-container {
     max-width: 400px;
     /* text-align: center; */
@@ -22,14 +21,13 @@ body{
     padding-top: 12px;
     padding-bottom: 12px;
     font-family: 'Platypi', sans-serif;
-    background-color: #F4F5E2;
-    border-radius: 5px;
+    background-color: #ffffeff7;
+    border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     width: 90%; 
-    max-width: 400px;
 }
 
-#pre-survey, #survey-container {
+#pre-survey, #survey-container, #loading-page{
     max-width: 400px;
     /* text-align: center; */
     margin: auto;
@@ -38,46 +36,36 @@ body{
     padding-right: 20px;
     padding-bottom: 7px;
     
-    font-family: 'Sedan', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 17.5px; 
-    background-color: #F4F5E2;
+    background-color: #ffffea;
     border-radius: 5px;
     /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
     width: 90%; 
     max-width: 400px;
 
-    line-height: 1.3em;
+    line-height: 1.45em;
 }
 
 #pre-survey img {
     max-width: 100%; 
-    max-height: 230px;
+    max-height: 170px;
     display: block;
     margin: auto;
 }
 
-#loading-page img {
-    max-width: 100%; 
-    max-height: 230px;
-    display: block;
-    margin: auto;
-}
-
-#survey-container img {
+#survey-container img, #loading-page img {
     max-width: 100%; /* make sure the image doesn't exceed the container width */
     height: auto;
     max-height: 200px; 
     display: block; 
     margin: auto;
-    font-size: 24px;
+    font-size: 16px;
 }
+
 
 #disclaimer {
-    font-size: 17px;
-}
-
-#convey-meaning {
-    text-align: center
+    font-size: 14.8px;
 }
 
 .hide {
@@ -86,20 +74,23 @@ body{
 
 button {
     font-family: 'Platypi';
+    font-size: 15px;
+    color: #003DA7;
+    font-weight: bold;
     display: block;
     width: 100%;
-    padding: 8px 20px;
+    padding: 8.5px 20px;
+    padding-bottom: 10px;
     margin-top: 25px;
-    background-color: #b0946f;
-    color: white;
-    border: none;
-    border-radius: 5px;
+    background-color: #ffffff;
+    border: 2.5px solid #003DA7;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 15px;
 }
 
 button:hover {
-    background-color: #927b5d;
+    background-color: #003DA7;
+    color:#ffffff;
 }
 
 input[type="text"], select {
@@ -108,8 +99,36 @@ input[type="text"], select {
     margin: 10px auto;
     border-radius: 5px;
     border: 1px solid #ddd;
+    font-family: 'Poppins';
+    font-size: 14px;
 }
 
+input[type="radio"], input[type="checkbox"]  {
+    margin-right: 10px; /* Adjust the right margin to increase space */
+    border: 10px #000000;
+}
+
+label {
+    font-size: 17px; /* Adjust the font size to your preference */
+}
+
+textarea {
+    width: 95%; /* Set width to 95% */
+    padding: 10px; /* Add padding */
+    padding-bottom: 0px;
+    margin: 10px auto; /* Center horizontally with margin */
+    border-radius: 5px; /* Add border radius */
+    border: 1px solid #ddd; /* Add border */
+    font-family: 'Poppins'; /* Set font family */
+    font-size: 14px; /* Set font size */
+    height: 50px;
+    overflow-y: hidden; /* Hide vertical scrollbar initially */
+  }
+
+textarea.expanded {
+    height: auto; /* Auto-expand height when typing */
+    overflow-y: auto; /* Show vertical scrollbar when expanded */
+}
 
 header {
     text-align: center;
@@ -118,8 +137,8 @@ header {
 }
 
 header h1 {
-    font-size: 46px; 
-    color: #1b1b1b;
+    font-size: 48px; 
+    color: #003DA7;
     margin: 2 0;
 }
 
@@ -136,3 +155,5 @@ footer p {
     font-size: 14px; 
     color: #1b1b1b;
 }
+
+

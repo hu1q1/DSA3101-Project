@@ -1,8 +1,10 @@
 // Initialize a list (array) with predefined values
-const presurveystage = [1,2,3];
-const stage0 = [4,5,6,7,8,9];
-const stage1 = [10,11,12,13,14,15,16];
-const stage2 = [17,18,19,20,21,22,23];
+const presurveystage = [1,2,3]; //demographic questions
+const stage0 = [4,5,6,7,8,9]; // customer characteristics
+
+const stage1 = [10,11,12,13,14,15,16]; //customer habits
+
+const stage2 = [17,18,19,20,21,22,23]; //brand or product-related questions
 const stage3 = [24,25,26];
 
 console.log(presurveystage.includes(1));   // REMOVE THIS WHEN DONE // //////////////------_____________--------------------//////////////
@@ -11,16 +13,11 @@ let responses = []; // Store all responses here
 let personality = [];
 let finalPersona = '';
 
-// Predefined answers including images for reference
 const mcq = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,21,24,25]
+const shortAns = [1]
 const multipleResponse = [6, 8, 9, 11, 12, 15, 17, 18, 24]
 const predefinedAnswers = {
-    // 0: [
-    //     {
-    //         /* choose one randomly when */ 
-    //         qn_image: "/static/images/Q123.gif"
-    //     }
-    // ],
+
     1: [
         {
             qn_image: "/static/images/0_oh_hi.gif"
@@ -40,61 +37,37 @@ const predefinedAnswers = {
     4: [
         {
             qn_image: "/static/images/hair_length.gif",
-            options: ['Short', 'Medium', 'Long'],
-            'Short': null,
-            'Medium': null,
-            'Long': null
+            options: ['Short', 'Medium', 'Long']
     }
     ],
     5: [
         {
             qn_image: "/static/images/hair_type.gif",
-            options: ['Straight', 'Wavy', 'Curly', 'Others'],
-            'Straight': null,
-            'Wavy': null,
-            'Curly': null,
-            'Others': null // Others option for text input
+            options: ['Straight', 'Wavy', 'Curly', 'Others']
         }
     ],
     6: [
         {
             qn_image: "/static/images/hair_concerns.gif",
-            options: ['Split ends', 'Breakage', 'Thinning', 'None', 'Others'],
-            'Split ends': null, 
-            'Breakage': null,
-            'Thinning': null,
-            'None': null,
-            'Others': null
+            options: ['Split ends', 'Breakage', 'Thinning', 'None', 'Others']
         }
     ],
     7: [
         {
             qn_image: "/static/images/concerned.gif",
-            options: ['Dry', 'Oily', 'Normal', 'Others'],
-            // 'Dry': "static/images/Q123.gif",
-            // 'Oily': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png'
-            // 'Normal': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png',
+            options: ['Dry', 'Oily', 'Normal', 'Others']
         }
     ],
     8: [
         {
             qn_image: "/static/images/scalp_concerns.gif",
-            options: ['Sensitive', 'Allergies', 'Dandruff', 'Dryness', 'None', 'Others'],
-            // 'Sensitive': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png',
-            // 'Allergies': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png',
-            // 'Dandruff': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png',
-            // 'Dryness': 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png',
-            // 'Others': null
+            options: ['Sensitive', 'Allergies', 'Dandruff', 'Dryness', 'None', 'Others']
         }
     ],
     9: [
         {
             qn_image: "/static/images/hair_treatments.gif",
-            options: ['Colored', 'Permed', 'Bleached', 'None', 'Others'],
-            // 'Colored': "/static/images/colour.gif",
-            // 'Permed': "/static/images/perm.gif",
-            // 'Bleached': "/static/images/bleach.gif",
-            // 'Others': null
+            options: ['Colored', 'Permed', 'Bleached', 'None', 'Others']
         }
     ],
 
@@ -102,69 +75,38 @@ const predefinedAnswers = {
     10: [
         {
             qn_image: "/static/images/wash_frequency.gif",
-            options: ['2-3 times per day', 'Once per day', 'Once every 2-3 days', 'Others'],
-            '2-3 times per day': null,
-            'Once per day': null,
-            'Once every 2-3 days': null,
-            'Others': null
+            options: ['2-3 times per day', 'Once per day', 'Once every 2-3 days', 'Others']
         }
     ],
 
     11: [
         {
             qn_image: "/static/images/hair_products.gif",
-            options: ['Shampoo', 'Hair conditioner', 'Hair mask', 'Leave-in treatments', 'Others'],
-            // 'Shampoo': "/static/images/shampoo.gif",
-            // 'Hair conditioner': "/static/images/conditioner.gif",
-            // 'Hair mask': "/static/images/hair_mask.gif",
-            // 'Leave-in treatments': "/static/images/leave_in.gif",
-            // 'Others': null
+            options: ['Shampoo', 'Hair conditioner', 'Hair mask', 'Leave-in treatments', 'Others']
         }
     ],
     12: [
         {
             qn_image: "/static/images/styling_products.gif",
-            options: ['Hair dryer', 'Flat iron', 'Curler', 'Gels & Mousses', 'Serums', 'None', 'Others'],
-            'Hair dryer': null,
-            'Flat iron': null,
-            'Curler': null,
-            'Gels & Mousses': null,
-            'Serums': null,
-            'None': null,
-            'Others': null
+            options: ['Hair dryer', 'Flat iron', 'Curler', 'Gels & Mousses', 'Serums', 'None', 'Others']
         }
     ],
     13: [
         {
             qn_image: "/static/images/switch_brand.gif",
-            options: ['Every few months', 'Every year', 'Every few years', 'I do not switch', 'Others'],
-            'Every few months': null,
-            'Every year': null,
-            'Every few years': null,
-            'I do not switch': null,
-            'Others': null
+            options: ['Every few months', 'Every year', 'Every few years', 'I do not switch', 'Others']
         }
     ],
     14: [
         {
             qn_image: "/static/images/hair_salon.gif",
-            options: ['Every few weeks', 'Every few months', 'Once a year', 'I do not visit', 'Others'],
-            'Every few weeks': null,
-            'Every few months': null,
-            'Once a year': null,
-            'I do not visit': null,
-            'Others': null
+            options: ['Every few weeks', 'Every few months', 'Once a year', 'I do not visit', 'Others']
         }
     ],
     15: [
         {
             qn_image: "/static/images/hair_goals.gif",
-            options: ['Volume', 'Shine', 'Smoothness', 'None', 'Others'],
-            'Volume': null,
-            'Shine': null,
-            'Smoothness': null,
-            'None': null,
-            'Others': null
+            options: ['Volume', 'Shine', 'Smoothness', 'None', 'Others']
         }
     ],
 
@@ -172,12 +114,7 @@ const predefinedAnswers = {
     16: [
         {
             qn_image: "/static/images/hair_health.gif",
-            options: [1,2,3,4,5],
-            '1': null,
-            '2': null,
-            '3': null,
-            '4': null,
-            '5': null
+            options: [1,2,3,4,5]
         }
     ],
 
@@ -185,31 +122,19 @@ const predefinedAnswers = {
     17: [
         {
             qn_image: "/static/images/product_awareness.gif",
-            options: ['Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection','Nutrient blend collection', 'None'],
-            'Micellar series': "/static/images/micellar.gif",
-            'Core benefits': "/static/images/core_benefits.gif",
-            '3 minutes miracle': "/static/images/3mins.gif",
-            'Miracles collection': "/static/images/miracle.gif",
-            'Nutrient blend collection': "/static/images/nutrient_blend.gif",
-            'None': null
+            options: ['Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection','Nutrient blend collection', 'None']
         }
             
     ],
     18: [
         {
             qn_image: "/static/images/info.gif",
-            options: ['Word of mouth', 'Retail shops', 'Social media', 'TV commercials', 'Others'],
-            'Word of mouth': null,
-            'Retail shops': null,
-            'Social media': null,
-            'TV commercials': null,
-            'Others': null
+            options: ['Word of mouth', 'Retail shops', 'Social media', 'TV commercials', 'Others']
         }
     ],
     19: [
         {
             qn_image: "/static/images/fav.gif", /* fav */
-            'Others': null
         }
     ],
     20: [
@@ -223,24 +148,17 @@ const predefinedAnswers = {
     21: [
         {
             qn_image: "/static/images/effectiveness.gif", /* overall effectiveness */
-            options: [1,2,3,4,5],
-            '1': null,
-            '2': null,
-            '3': null,
-            '4': null,
-            '5': null
+            options: [1,2,3,4,5]
         }
     ],
     22: [
         {
             qn_image: "/static/images/recommend.gif", /* recommend */
-            'Others': null
         }
     ],
     23: [
         {
             qn_image: "/static/images/improvements.gif", /* improvements */
-            'Others': null
         }
     ],
 
@@ -248,36 +166,20 @@ const predefinedAnswers = {
     24: [
         {
             qn_image: "/static/images/factors.gif", /* importance of factors */
-            options: ['Natural ingredients', 'Fragrance', 'Celebrity endorsements or influencer recommendations', 'Specific hair concerns', 'Price', 'Multi-functional benefits', 'Eco-friendly or sustainable packaging', 'Hair stylists for salon professionals', 'Advertising campaigns or promotions', 'Others'],
-            'Natural ingredients': null,
-            'Fragrance': null,
-            'Celebrity endorsements or influencer recommendations': null,
-            'Specific hair concerns': null,
-            'Price': null,
-            'Multi-functional benefits': null,
-            'Eco-friendly or sustainable packaging': null,
-            'Hair stylists for salon professionals': null,
-            'Advertising campaigns or promotions': null,
-            'Others': null
+            options: ['Natural ingredients', 'Fragrance', 'Celebrity endorsements or influencer recommendations', 'Specific hair concerns', 'Price', 'Multi-functional benefits', 'Eco-friendly or sustainable packaging', 'Hair stylists for salon professionals', 'Advertising campaigns or promotions', 'Others']
         }
     ],
     25: [
         {
             qn_image: "/static/images/price.gif", /* price range */
-            options: ['Under $10', '$10-$30', '$30-$100', 'Above $100'],
-            'Under $10': null,
-            '$10-$30': null,
-            '$30-$100': null,
-            'Above $100': null
+            options: ['Under $10', '$10-$30', '$30-$100', 'Above $100']
         }
     ],
     26: [
         {
             qn_image: "/static/images/online_instore.gif", /* online/ in store */
-            'Others': null
         }
     ]
-    //, , , , 
 
 };
 
@@ -286,32 +188,10 @@ const stage_images = {
     1: "/static/images/growth0.gif", /* for end of stage 0 */
     2: "/static/images/growth1.gif",
     3: "/static/images/growth2.gif",
-    4: "/static/images/growth3.gif"
+    // 4: "/static/images/growth3.gif"
 };
 
 let currentStage = 0
-/*
-let loadingImageContainer = document.getElementById("loading-image");
-let loadingImage = document.createElement('img');
-switch (currentStage) {
-    case 0:
-        loadingImage.src = "https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png";
-        break;
-    case 2:
-        loadingImage.src = "https://pororoparksg.com/wp-content/uploads/2022/08/12-2.png";
-        break;
-    case 3:
-        loadingImage.src = "https://pororoparksg.com/wp-content/uploads/2022/08/12-3.png";
-        break;
-    default:
-        loadingImage.src = "https://pororoparksg.com/wp-content/uploads/2022/08/12-4.png";
-}
-loadingImageContainer.appendChild(loadingImage);
-*/
-// Scroll to the top of the page when it's refreshed doesnt seem to be working
-
-
-
 
 
 // Function to start the survey
@@ -319,8 +199,6 @@ function startSurvey() {
 
     document.getElementById('pre-survey').classList.add('hide');
     document.getElementById('loading-page').classList.remove('hide');
-
-    
 
     //start very first qn
     currentStage = 0;
@@ -359,14 +237,20 @@ function scrollToSection(sectionId) {
     }
 }
 
+// Function to auto-expand textarea for paragraph typing
+function autoExpand(element) {
+    element.style.height = 'auto';
+    element.style.height = (element.scrollHeight) + 'px';
+  }
+
 
 function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) given by backend 
 
     console.log("This is the stage rn", currentStage)/////////////// DEBUGGG  ************* ??????????////////////////////
-    
+
     document.getElementById('loading-page').classList.add('hide');
     document.getElementById('survey-container').classList.remove('hide');
-
+    
     const headerContainer = document.getElementById('big-container');
     const questionContainer = document.getElementById('question'); //// OVER HERE !!!!!!!!!!
     const imageContainer = document.getElementById('image'); // see 'question', 'image', 'answers' etc on index html
@@ -385,7 +269,7 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
     if (qn_index in predefinedAnswers && predefinedAnswers[qn_index][0].hasOwnProperty('qn_image')) {
         const image = document.createElement('img');
         image.src = predefinedAnswers[qn_index][0]['qn_image'];
-        image.alt = 'question image';
+        image.alt = 'Question Image';
         imageContainer.appendChild(image);
     }
 
@@ -427,8 +311,8 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
                     image.alt = option; // Set alt text for accessibility
                     container.appendChild(image);
 
-                    image.style.maxWidth = '360px'; /* Adjust the size of the question images */
-                    image.style.maxHeight = '180px';
+                    // image.style.maxWidth = '360px'; /* Adjust the size of the question images */
+                    // image.style.maxHeight = '180px';
                 }
             }
 
@@ -449,6 +333,8 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
                 };
 
                 container.appendChild(textInput);
+
+
             }
 
             answersContainer.appendChild(container);
@@ -459,9 +345,9 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
             let answer = '';
             const selectedOption = document.querySelector('input[name="answer"]:checked');
             if (qnType === 'radio') { // single choice mcq
-                if (selectedOption) {
-                    answer = selectedOption.value === 'Others' ? document.getElementById('otherText').value.trim() : selectedOption.value;
-                }
+            if (selectedOption) {
+                answer = selectedOption.value === 'Others' ? document.getElementById('otherText').value.trim() : selectedOption.value;
+            }
             } else { //multiple responses mcq
                 const selectedOptions = document.querySelectorAll('input[name="answer"]:checked');
                 selectedOptions.forEach((option, index) => {
@@ -486,7 +372,8 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
             }
         };
         
-    } else { // fully open-ended qn
+    } 
+    else if (shortAns.includes(qn_index)) {
         // Create an input element
         var textInput = document.createElement('input');
         // Set attributes for the input element
@@ -511,6 +398,31 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
             // addPersona(document.getElementById('userInput').value.trim(), qn_index);
         };
     }
+    else { // fully open-ended qn; paragraph typing
+        // Create a textarea element
+        var textInput = document.createElement('textarea');
+        // Set attributes for the textarea element
+        textInput.setAttribute('id', 'userInput'); // Set textarea ID to 'userInput'
+        textInput.setAttribute('name', 'userInput'); // Set textarea name to 'userInput'
+        const answersContainer = document.getElementById('answers');
+        answersContainer.innerHTML = ''; // Empty the answers container
+        // Append the textarea element to the answers container
+        answersContainer.appendChild(textInput);
+
+        const nextButton = document.getElementById('next-btn');
+        nextButton.style.display = 'block'; // Show the next button
+        nextButton.disabled = true; // Initially disable the next button
+        textInput.oninput = () => { // Enable the Next button when text is entered
+            autoExpand(textInput); // Call autoExpand to dynamically resize the textarea
+            nextButton.disabled = !textInput.value.trim(); // Disable if empty, enable if text is entered
+        };
+
+        // Proceed to submit answer 
+        nextButton.onclick = () => {
+            submitAnswer(document.getElementById('userInput').value.trim(), currentStage, qn_index);
+            // addPersona(document.getElementById('userInput').value.trim(), qn_index);
+        };
+    }
 }
 
 function submitAnswer(answer, stageNumber, qn_index) {
@@ -521,8 +433,7 @@ function submitAnswer(answer, stageNumber, qn_index) {
     document.getElementById('survey-container').classList.add('hide');
     document.getElementById('loading-page').classList.remove('hide');
 
-    backendNextQn = sendUserAnswerToBackend( {'user_response': answer,
-'stage': stageNumber} )
+    backendNextQn = sendUserAnswerToBackend( {'user_response': answer,'stage': stageNumber} )
 }
 
 function sendUserAnswerToBackend(userAnswer) { 
@@ -607,23 +518,6 @@ function decidePersona(p) {
     }
 }
 
-// function displayResult(persona) {
-//     if (persona === 'Blue') {
-//         return 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png';
-//     } else if (persona === 'Green') {
-//         return 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png';
-//     } else if (persona === 'Yellow') {
-//         return 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png';
-//     } else if (persona === 'Red') {
-//         return 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png';
-//     } else if (persona === 'Purple') {
-//         return 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png';
-//     } else if (persona === 'Rainbow') {
-//         console.log("heloooooo")
-//         return 'https://pororoparksg.com/wp-content/uploads/2022/08/12-1.png';
-//     } 
-// }
-
 function displayResult(persona) {
     if (persona === 'Blue') {
         resultImage.src = "/static/images/blue.gif";
@@ -643,12 +537,12 @@ function displayResult(persona) {
 
 function showStageCompletionImage(next_stage_qn, next_question_id) {
     console.log('Stage completed. Proceeding to the next stage after user presses the *next* button...'); ///// DEBUGG ***********??????//////////////////
-        
+    
     // you would likely update the DOM with a message or image.
 
-    document.getElementById('loading-page').classList.add('hide');
-    document.getElementById('survey-container').classList.remove('hide');
-
+        document.getElementById('loading-page').classList.add('hide');
+        document.getElementById('survey-container').classList.remove('hide');
+        
     const questionContainer = document.getElementById('question');
     const imageContainer = document.getElementById('image');
     const answersContainer = document.getElementById('answers');
@@ -664,7 +558,7 @@ function showStageCompletionImage(next_stage_qn, next_question_id) {
     newStageMascot.src = stage_images[currentStage];
     newStageMascot.alt = `stage ${currentStage} mascot`; // Set alt text for accessibility
     answersContainer.appendChild(newStageMascot);
-    
+
     //set up for the following stage
     currentStage++;
 
@@ -709,7 +603,7 @@ function showSurveyCompletionPage(llm_reply) {
         document.getElementById('survey-container').classList.add('hide');
 
         //Decide the personality
-        decidePersona(personality);
+    decidePersona(personality);
         document.getElementById('results-page').classList.remove('hide');
         const finalStageMascot = document.createElement('img');
 

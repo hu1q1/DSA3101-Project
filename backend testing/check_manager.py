@@ -19,5 +19,3 @@ class QuestionManager:
         return self.question_checks.get(question_id, False)
 
 question_manager = QuestionManager("config.yaml")
-
-print(question_manager.is_check_required(22))

@@ -5,6 +5,11 @@ import yaml
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
+# Importing required modules from transformers package
+from transformers import pipeline
+from transformers.utils import logging
+logging.set_verbosity_error() # Suppressing unnecessary logs from transformers package
+
 # Import .env variables
 import load_env
 
@@ -37,3 +42,8 @@ embedding_model = HuggingFaceEmbeddings(
         "normalize_embeddings": config["huggingface_embeddingmodel"]["normalize_embeddings"]
     },  # Specify if embeddings should be normalized
 )
+
+# Initialise a sentiment model from Hugging Face with pipeline
+pipe = pipeline(
+        "text-classification", model=config["huggingface_sentimentmodel"]["model"]
+    )

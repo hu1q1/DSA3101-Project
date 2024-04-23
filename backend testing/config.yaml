@@ -20,7 +20,7 @@ survey_id: shampoo # Set a unique survey id. Surveys with the same id and questi
 
 
 survey_stages:
-  - stage: 0
+  - stage: 0 # Necessary to set up stage 0
     questions:
       - id: 1
         question: What is your name?

@@ -616,7 +616,7 @@ def start_survey():
             "stage": [0],
         }
     )
-    history.to_json("history.json", orient="records")
+    history.to_json("shampoo_history.json", orient="records")
 
     # Return first question id and llm generated question
     return 1, first_question
@@ -632,9 +632,16 @@ def end_survey(history: pd.DataFrame) -> str:
 
     # Save survey history into mysql database
     history = history.to_dict(orient="records")
+
+    # Generate database name
+    files = os.listdir(".")
+    history_file = [file for file in files if file.endswith("_history.json")][0]
+    database_name = history_file.replace("_history.json", "")
+
+    # Update SQL database
     survey_info = get_survey_info(history)
-    initialise_database(survey_info)
-    update_database(survey_info, history)
+    initialise_database(survey_info, database_name)
+    update_database(survey_info, history, database_name)
 
     # Remove created files and directories during the survey
     if os.path.exists("stage_0_questions"):
@@ -647,8 +654,8 @@ def end_survey(history: pd.DataFrame) -> str:
         shutil.rmtree("stage_3_questions/")
     if os.path.exists("stage_4_questions"):
         shutil.rmtree("stage_4_questions/")
-    if os.path.exists("history.json"):
-        os.remove("history.json")
+    if os.path.exists("shampoo_history.json"):
+        os.remove("shampoo_history.json")
 
     # Return end message
     return end_message
@@ -658,7 +665,7 @@ def end_survey(history: pd.DataFrame) -> str:
 def get_question_id_and_llm_response(user_response: str, stage: int):
 
     # Load in survey history
-    history = pd.read_json("history.json")
+    history = pd.read_json("shampoo_history.json")
 
     # Add user response to history
     history.loc[history.index[-1], "user_response"] = user_response
@@ -700,7 +707,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
                     }
                 )
                 history = pd.concat([history, new_row], ignore_index=True)
-                history.to_json("history.json", orient="records")
+                history.to_json("shampoo_history.json", orient="records")
 
                 # Return root question id and follow up question to frontend
                 return prev_question_id, follow_up_question
@@ -735,7 +742,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
                 }
             )
             history = pd.concat([history, new_row], ignore_index=True)
-            history.to_json("history.json", orient="records")
+            history.to_json("shampoo_history.json", orient="records")
 
             # Return question id of 17 to frontend to signify start of stage 3 survey
             return 17, llm_reply
@@ -765,7 +772,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
         }
     )
     history = pd.concat([history, new_row], ignore_index=True)
-    history.to_json("history.json", orient="records")
+    history.to_json("shampoo_history.json", orient="records")
 
     # Return next question id and LLM output
     return next_question_id, llm_reply

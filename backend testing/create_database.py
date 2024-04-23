@@ -40,9 +40,12 @@ def get_response(hist: Dict, id: int) -> str:
     return ",".join(value)
 
 
-def create_database():
+def create_database(database_name: str):
     """
     Creates a database named Surveydata if it doesn't exist.
+
+    Args:
+        database_name (str): Name of the database to be created.
 
     Returns:
         None
@@ -57,21 +60,21 @@ def create_database():
     mycursor = db.cursor()
 
     # create database
-    mycursor.execute("CREATE DATABASE IF NOT EXISTS Surveydata")
+    mycursor.execute(f"CREATE DATABASE IF NOT EXISTS {database_name}")
 
     db.commit()
 
     mycursor.close()
     db.close()
-    return
 
 
-def create_user_table(stages: List[str]):
+def create_user_table(stages: List[str], database_name: str):
     """
     Creates a table named Users in the Surveydata database with columns for each stage.
 
     Args:
         stages (List[str]): List of stages for which columns need to be created.
+        database_name (str): Name of the database to be used.
 
     Returns:
         None
@@ -84,7 +87,7 @@ def create_user_table(stages: List[str]):
         password=mysql_root_password,
     )
     mycursor = db.cursor()
-    mycursor.execute("USE Surveydata")
+    mycursor.execute(f"USE {database_name}")
 
     # Generate the SQL query to create the table
     columns = ", ".join([f"stage_{name} INT" for name in stages])
@@ -97,16 +100,16 @@ def create_user_table(stages: List[str]):
     db.commit()
     mycursor.close()
     db.close()
-    return
 
 
-def update_user_table(foreign_keys: List[int]):
+def update_user_table(foreign_keys: List[int], database_name: str):
     """
     Updates the Users table with foreign keys that corrsepond to the primary keys
     of the other tables.
 
     Args:
         foreign_keys (List[int]): List containing foreign keys.
+        database_name (str): Name of the database to be used.
 
     Returns:
         None
@@ -119,7 +122,7 @@ def update_user_table(foreign_keys: List[int]):
         password=mysql_root_password,
     )
     mycursor = db.cursor()
-    mycursor.execute("USE Surveydata")
+    mycursor.execute(f"USE {database_name}")
 
     # Generate the SQL query to update the table
     placeholders = ", ".join(["%s"] * len(foreign_keys))
@@ -132,17 +135,17 @@ def update_user_table(foreign_keys: List[int]):
     db.commit()
     mycursor.close()
     db.close()
-    return
 
 
 # Creates table for the a given survey stage
-def create_table(col_names: List[str], table_name: str):
+def create_table(col_names: List[str], table_name: str, database_name: str):
     """
     Creates a table with specified column names.
 
     Args:
         col_names (List[str]): List of column names.
         table_name (str): Name of the table to be created.
+        database_name (str): Name of the database to be used.
 
     Returns:
         None
@@ -155,7 +158,7 @@ def create_table(col_names: List[str], table_name: str):
         password=mysql_root_password,
     )
     mycursor = db.cursor()
-    mycursor.execute("USE Surveydata")
+    mycursor.execute(f"USE {database_name}")
 
     # Generate the SQL query to create the table
     columns = ", ".join([f"{name} VARCHAR(300)" for name in col_names])
@@ -168,10 +171,11 @@ def create_table(col_names: List[str], table_name: str):
     db.commit()
     mycursor.close()
     db.close()
-    return
 
 
-def update_table(table_name: str, id_list: List[int], hist: Dict) -> int:
+def update_table(
+    table_name: str, id_list: List[int], hist: Dict, database_name: str
+) -> int:
     """
     Updates the specified table with answers retrieved from chat history.
 
@@ -179,6 +183,7 @@ def update_table(table_name: str, id_list: List[int], hist: Dict) -> int:
         table_name (str): Name of the table to update.
         id_list (List[int]): List of IDs to retrieve responses for.
         hist (Dict): Dictionary containing the chat history.
+        database_name (str): Name of the database to be used.
 
     Returns:
         int: The ID of the last inserted row.
@@ -191,7 +196,7 @@ def update_table(table_name: str, id_list: List[int], hist: Dict) -> int:
         password=mysql_root_password,
     )
     mycursor = db.cursor()
-    mycursor.execute("USE Surveydata")
+    mycursor.execute(f"USE {database_name}")
 
     # Generate the SQL query to update the table
     placeholders = ", ".join(["%s"] * len(id_list))
@@ -255,27 +260,29 @@ def get_survey_info(history: List[Dict]) -> Dict:
     return survey_info
 
 
-def initialise_database(survey_info: Dict):
+def initialise_database(survey_info: Dict, database_name: str):
     """
     Initializes the database by creating the database itself and the user table.
 
     Args:
         survey_info (Dict): Dictionary containing survey information.
+        database_name (str): Name of the database to be created.
 
     Returns:
         None
     """
-    create_database()
-    create_user_table(survey_info["stages"])
+    create_database(database_name)
+    create_user_table(survey_info["stages"], database_name)
 
 
-def update_database(survey_info: Dict, history: Dict):
+def update_database(survey_info: Dict, history: Dict, database_name: str):
     """
     Updates the database with responses from the chat history.
 
     Args:
         survey_info (Dict): Dictionary containing survey information.
         history (Dict): Dictionary containing chat history.
+        database_name (str): Name of the database to be used.
 
     Returns:
         None
@@ -286,9 +293,9 @@ def update_database(survey_info: Dict, history: Dict):
     for stage in survey_info["stages"]:
         table_name = f"stage_{stage}"
         col_names = generate_col_names(survey_info[stage])
-        create_table(col_names, table_name)
-        row_id = update_table(table_name, survey_info[stage], history)
+        create_table(col_names, table_name, database_name)
+        row_id = update_table(table_name, survey_info[stage], history, database_name)
         foreign_keys.append(row_id)
 
     # Update the user table with the row id of the response in each table
-    update_user_table(foreign_keys)
+    update_user_table(foreign_keys, database_name)

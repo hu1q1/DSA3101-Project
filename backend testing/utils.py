@@ -1,14 +1,11 @@
 # Import necessary packages
 import os
-from dotenv import load_dotenv, find_dotenv
-from pathlib import Path
 import shutil
 import pandas as pd
+import yaml
 
 # Importing required modules from langchain package
 from langchain.docstore.document import Document
-from langchain_community.llms import HuggingFaceEndpoint
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate, ChatPromptTemplate
@@ -16,92 +13,46 @@ from operator import itemgetter
 from langchain_core.runnables import RunnableParallel
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 
-# Importing required modules from transformers package
-from transformers import pipeline
-from transformers.utils import logging
-
 # Importing custom function for creating vectordb
 from create_vectordbs import *
 
 # Importing mysql database related custom functions
 from create_database import *
 
-# Suppressing unnecessary logs
-logging.set_verbosity_error()
+# Import models
+from models import llm, embedding_model, pipe
 
+# Import question checker
+from check_manager import question_manager
 
-# Check if .env file exists in the current directory
-if os.path.isfile(".env"):
-    # If .env file exists, load environment variables from it
-    dotenv_path = Path(".env")  # Set path to .env file
-    load_dotenv(dotenv_path=dotenv_path)
-else:
-    # If .env file doesn't exist, attempt to find and load environment variables
-    load_dotenv(find_dotenv())
+# Import cache object
+from cache import state_cache
 
+# Load YAML file
+with open('config.yaml', 'r') as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
 
-# Initialize the Language Model (LLM) using Hugging Face endpoint
-ENDPOINT_URL = (
-    "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1"
-)
-
-# Define parameters for the Hugging Face endpoint
-llm = HuggingFaceEndpoint(
-    endpoint_url=ENDPOINT_URL,  # URL of the Hugging Face API endpoint
-    task="text-generation",  # Specify the task for the model
-    max_new_tokens=250,  # Maximum number of tokens to generate
-    top_k=300,  # Top k words to sample
-    temperature=1,  # Controls randomness in sampling
-    return_full_text=False,  # Specify whether to return the full generated text
-    streaming=True,  # Enable streaming mode for efficient processing of long texts
-    stop_sequences=["</s>"],  # Specify sequences to stop generation
-)
-
-
-# Initialize an embedding model from Hugging Face
-embedding_model = HuggingFaceEmbeddings(
-    model_name="all-MiniLM-L6-v2",  # Name of the pre-trained model to use for embeddings
-    model_kwargs={"device": "cpu"},  # Specify device for inference (CPU in this case)
-    encode_kwargs={
-        "normalize_embeddings": False
-    },  # Specify if embeddings should be normalized
-)
 
 
 def get_vectorstore(stage: int):
     """
     Retrieve the vectorstore (FAISS index).
 
-    If an updated FAISS index is found locally, load it. Otherwise, load the default FAISS index.
+    If an updated FAISS index is found locally, load it.
 
     Args:
         stage (int): The stage of the survey the user is currently at.
+        embedding_model: The embedding model used for vectorization.
 
     Returns:
         FAISS index: The vectorstore loaded from the local directory.
     """
-    if stage == 0:
-        db = FAISS.load_local(
-            "stage_0_questions",
-            embedding_model,
-            allow_dangerous_deserialization=True,
-        )
-    elif stage == 1:
-        db = FAISS.load_local(
-            "stage_1_questions", embedding_model, allow_dangerous_deserialization=True
-        )
-    elif stage == 2:
-        db = FAISS.load_local(
-            "stage_2_questions", embedding_model, allow_dangerous_deserialization=True
-        )
-    elif stage == 3:
-        db = FAISS.load_local(
-            "stage_3_questions", embedding_model, allow_dangerous_deserialization=True
-        )
-    elif stage == 4:
-        db = FAISS.load_local(
-            "stage_4_questions", embedding_model, allow_dangerous_deserialization=True
-        )
+    filename = f"stage_{stage}_questions"
+    db = FAISS.load_local(
+        filename,
+        embedding_model,
+        allow_dangerous_deserialization=True,
+    )
     return db
 
 
@@ -256,11 +207,6 @@ def get_user_sentiment(user_response: str):
     Returns:
         str: The sentiment label of the user response (e.g., "positive", "negative", "neutral").
     """
-    # Initialize sentiment analysis pipeline
-    pipe = pipeline(
-        "text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest"
-    )
-
     # Analyze sentiment of the user response
     user_sentiment = pipe(user_response)[0]["label"]
 
@@ -369,72 +315,8 @@ def remove_question_from_db(
         vectorstore.delete([vectorstore.index_to_docstore_id[count - 1]])
 
     # Save the updated vectorstore in the local directory for persistence
-    if stage == 0:
-        vectorstore.save_local("stage_0_questions")
-    elif stage == 1:
-        vectorstore.save_local("stage_1_questions")
-    elif stage == 2:
-        vectorstore.save_local("stage_2_questions")
-    elif stage == 3:
-        vectorstore.save_local("stage_3_questions")
-    elif stage == 4:
-        vectorstore.save_local("stage_4_questions")
-
-
-def checkUserResponse(question_id: int, stage: int) -> bool:
-    """
-    Check if user response for a given question ID needs to be checked based on the stage.
-
-    Args:
-        question_id (int): The ID of the question to check.
-        stage (int): The stage of the survey (1, 2, 3 or 4).
-
-    Returns:
-        bool: True if user response needs to be checked, False otherwise.
-    """
-    # Check the stage of the survey
-    if stage == 1:
-        # Iterate through stage 1 questions
-        for question in stage_1_questions:
-            # Check if question ID matches
-            if question["id"] == question_id:
-                # Check if user response needs to be checked
-                if question["check_user_response"] == 0:
-                    return False
-                else:
-                    return True
-    elif stage == 2:
-        # Iterate through stage 2 questions
-        for question in stage_2_questions:
-            # Check if question ID matches
-            if question["id"] == question_id:
-                # Check if user response needs to be checked
-                if question["check_user_response"] == 0:
-                    return False
-                else:
-                    return True
-    elif stage == 3:
-        # Iterate through stage 3 questions
-        for question in stage_3_questions:
-            # Check if question ID matches
-            if question["id"] == question_id:
-                # Check if user response needs to be checked
-                if question["check_user_response"] == 0:
-                    return False
-                else:
-                    return True
-    elif stage == 4:
-        # Iterate through stage 4 questions
-        for question in stage_4_questions:
-            # Check if question ID matches
-            if question["id"] == question_id:
-                # Check if user response needs to be checked
-                if question["check_user_response"] == 0:
-                    return False
-                else:
-                    return True
-    # Return False if question ID or stage is invalid
-    return False
+    filename = f"stage_{stage}_questions"
+    vectorstore.save_local(filename)
 
 
 def generate_first_question(question: str) -> str:
@@ -567,9 +449,9 @@ def generateFollowUp(user_response: str, question: str):
     return output
 
 
-def generate_stage3_first_question(question: str) -> str:
+def generate_stage_first_question(question: str) -> str:
     """
-    Generates the first question for stage 3 of the survey.
+    Generates the first question for specified stage of the survey.
 
     Args:
         question (str): The survey question to be asked.
@@ -600,26 +482,35 @@ def generate_stage3_first_question(question: str) -> str:
 
 # Function to start the survey
 def start_survey():
-    # Create survey question vectordbs in local directory
-    create_vectordbs(embedding_model=embedding_model)
-
-    # Invoke LLM to ask the first question: What is your name?
-    first_question = generate_first_question("What is your name?")
+    # Create survey question vectordbs in local directory and obtain first stage questions
+    first_stage_questions = create_vectordbs(embedding_model=embedding_model)
+    
+    # Invoke LLM to ask the first question
+    first_question_set = first_stage_questions[0]["question"]
+    first_question_id = first_stage_questions[0]["id"]
+    first_question_llm = generate_first_question(first_question_set)
 
     # Create a json file to store the survey history
     history = pd.DataFrame(
         {
-            "id": [1],
-            "question": ["What is your name?"],
-            "llm_question": [first_question],
+            "id": [first_question_id],
+            "question": [first_question_set],
+            "llm_question": [first_question_llm],
             "user_response": [""],
             "stage": [0],
         }
     )
-    history.to_json("history.json", orient="records")
+    history.to_json(f"{config["survey_id"]}_history.json", orient="records")
+
+    # Create a json file to store first stage questions except stage 0
+    first_stage_questions.pop(0)
+    if len(first_stage_questions) != 0:
+        # Save the modified dictionary to a JSON file
+        with open('first_stage_questions.json', 'w') as json_file:
+            json.dump(first_stage_questions, json_file)
 
     # Return first question id and llm generated question
-    return 1, first_question
+    return first_question_id, first_question_llm
 
 
 # Function to end the survey
@@ -637,18 +528,14 @@ def end_survey(history: pd.DataFrame) -> str:
     update_database(survey_info, history)
 
     # Remove created files and directories during the survey
-    if os.path.exists("stage_0_questions"):
-        shutil.rmtree("stage_0_questions/")
-    if os.path.exists("stage_1_questions"):
-        shutil.rmtree("stage_1_questions/")
-    if os.path.exists("stage_2_questions"):
-        shutil.rmtree("stage_2_questions/")
-    if os.path.exists("stage_3_questions"):
-        shutil.rmtree("stage_3_questions/")
-    if os.path.exists("stage_4_questions"):
-        shutil.rmtree("stage_4_questions/")
-    if os.path.exists("history.json"):
-        os.remove("history.json")
+    for stage in config["survey_stages"]:
+        directory = f"stage_{stage["stage"]}_questions"
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+    if os.path.exists(f"{config["survey_id"]}_history.json"):
+        os.remove(f"{config["survey_id"]}_history.json")
+    if os.path.exists("first_stage_questions.json"):
+        os.remove("first_stage_questions.json")
 
     # Return end message
     return end_message
@@ -658,14 +545,17 @@ def end_survey(history: pd.DataFrame) -> str:
 def get_question_id_and_llm_response(user_response: str, stage: int):
 
     # Load in survey history
-    history = pd.read_json("history.json")
+    history = pd.read_json(f"{config["survey_id"]}_history.json")
+
+    # Get current stage
+    stage = history.loc[history.index[-1], "stage"]
 
     # Add user response to history
     history.loc[history.index[-1], "user_response"] = user_response
 
     # Check if previous question asked requires checking
     prev_question_id = int(history.loc[history.index[-1], "id"])
-    needCheck = checkUserResponse(prev_question_id, stage)
+    needCheck = question_manager.is_check_required(prev_question_id)
     if needCheck:
 
         # Get previous llm question asked
@@ -677,11 +567,10 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
         if needFollowUp:
 
             # Check if already followed up: allow only one follow up question
-            if os.path.exists("clarify.txt"):
-                os.remove("clarify.txt")
+            if "clarify" in state_cache:
+                del state_cache["clarify"]
             else:
-                with open("clarify.txt", "w") as file:
-                    file.write("")
+                state_cache["clarify"] = True
 
                 # Generate follow up question
                 follow_up_question = generateFollowUp(user_response, prev_llm_question)
@@ -700,7 +589,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
                     }
                 )
                 history = pd.concat([history, new_row], ignore_index=True)
-                history.to_json("history.json", orient="records")
+                history.to_json(f"{config["survey_id"]}_history.json", orient="records")
 
                 # Return root question id and follow up question to frontend
                 return prev_question_id, follow_up_question
@@ -709,36 +598,44 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
     db = get_vectorstore(stage)
 
     # Go to next stage if there are no more questions in the current vectordb
-    if len(db.docstore._dict) == 0:
-        # If survey is at stage 4, end survey
-        if stage == 4:
+    if len(db.docstore._dict) == 0:            
+
+        # If survey is at the last stage, end survey
+        if stage == config["survey_stages"][-1]["stage"]:
             # Generate end message
             llm_reply = end_survey(history)
 
             # Return question id of -1 to frontend to signify end of survey
             return -1, llm_reply
 
-        # If survey is at stage 2, ask first question of stage 3
-        if stage == 2:
-            # Generate LLM-based question
-            stage_3_first_question = "Which of the following Pantene product series (collections) are you aware of?"
-            llm_reply = generate_stage3_first_question(stage_3_first_question)
+        # Load first stage questions if json file exists
+        if os.path.exists("first_stage_questions.json"):
+            with open('first_stage_questions.json', 'r') as json_file:
+                first_stage_questions = json.load(json_file)
 
-            # Saving the question asked to history
-            new_row = pd.DataFrame(
-                {
-                    "id": [17],
-                    "question": [stage_3_first_question],
-                    "llm_question": [llm_reply],
-                    "user_response": [""],
-                    "stage": [3],
-                }
-            )
-            history = pd.concat([history, new_row], ignore_index=True)
-            history.to_json("history.json", orient="records")
+            # If stage first question exists, ask it.
+            if first_stage_questions.get(str(stage+1), False):
+                stage_first_question = first_stage_questions[str(stage+1)]["question"]
+                stage_first_question_id = first_stage_questions[str(stage+1)]["id"]
 
-            # Return question id of 17 to frontend to signify start of stage 3 survey
-            return 17, llm_reply
+                # Generate LLM-based question
+                stage_first_llm_question = generate_stage_first_question(stage_first_question)
+
+                # Saving the question asked to history
+                new_row = pd.DataFrame(
+                    {
+                        "id": [stage_first_question_id],
+                        "question": [stage_first_question],
+                        "llm_question": [stage_first_llm_question],
+                        "user_response": [""],
+                        "stage": [stage+1],
+                    }
+                )
+                history = pd.concat([history, new_row], ignore_index=True)
+                history.to_json(f"{config["survey_id"]}_history.json", orient="records")
+
+                # Return stage first question id and llm generated question to frontend
+                return stage_first_question_id, stage_first_llm_question
 
         stage += 1
         db = get_vectorstore(stage)
@@ -750,6 +647,9 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
     llm_reply, next_question_document, next_question_id = get_llm_outputs(
         rag_chain, user_response, prev_question
     )
+
+    # Clean llm_reply by stripping
+    llm_reply = llm_reply.strip()
 
     # Remove asked question from the vectordb
     remove_question_from_db(db, next_question_document, stage)
@@ -765,7 +665,7 @@ def get_question_id_and_llm_response(user_response: str, stage: int):
         }
     )
     history = pd.concat([history, new_row], ignore_index=True)
-    history.to_json("history.json", orient="records")
+    history.to_json(f"{config["survey_id"]}_history.json", orient="records")
 
     # Return next question id and LLM output
     return next_question_id, llm_reply

@@ -18,4 +18,4 @@ class QuestionManager:
     def is_check_required(self, question_id):
         return self.question_checks.get(question_id, False)
 
-question_manager = QuestionManager("backend testing/config.yaml")
+question_manager = QuestionManager("config.yaml")

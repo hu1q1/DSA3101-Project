@@ -15,7 +15,10 @@ huggingface_embeddingmodel:
 huggingface_sentimentmodel:
    model: cardiffnlp/twitter-roberta-base-sentiment-latest
 
-  
+
+survey_id: shampoo # Set a unique survey id. Surveys with the same id and questions will be added to a common mysql database.
+
+
 survey_stages:
   - stage: 0
     questions:

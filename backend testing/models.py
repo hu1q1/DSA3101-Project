@@ -14,7 +14,7 @@ logging.set_verbosity_error() # Suppressing unnecessary logs from transformers p
 import load_env
 
 # Load YAML file
-with open('config.yaml', 'r') as file:
+with open('backend testing/config.yaml', 'r') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
     
 

@@ -6,7 +6,7 @@ from langchain_community.vectorstores import FAISS
 import yaml
 
 # Load YAML file
-with open('config.yaml', 'r') as file:
+with open('backend testing/config.yaml', 'r') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
 

@@ -278,11 +278,14 @@ def update_database(survey_info: Dict, history: Dict, database_name: str):
     """
     foreign_keys = []
 
-    # Update each table with the responses from history
+    # Create and update each table with the responses from history
     for stage in survey_info["stages"]:
+        # Stage table generation
         table_name = f"Stage_{stage}"
         col_names = generate_col_names(survey_info[stage])
         create_table(col_names, table_name, database_name)
+
+        # Stage table update
         row_id = update_table(table_name, survey_info[stage], history, database_name)
         foreign_keys.append(row_id)
 

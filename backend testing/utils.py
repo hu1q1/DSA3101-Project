@@ -530,7 +530,7 @@ def end_survey(history: pd.DataFrame) -> str:
     # Save survey history into mysql database
     history = history.to_dict(orient="records")
     survey_info = get_survey_info(history)
-    initialise_database(survey_info, database_name)
+    create_database(database_name)
     update_database(survey_info, history, database_name)
 
     # Remove created files and directories during the survey

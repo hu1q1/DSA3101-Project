@@ -42,7 +42,7 @@ def get_response(hist: Dict, id: int) -> str:
 
 def create_database(database_name: str):
     """
-    Creates a database named Surveydata if it doesn't exist.
+    Creates a database with database_name if it doesn't exist.
 
     Args:
         database_name (str): Name of the database to be created.
@@ -70,7 +70,7 @@ def create_database(database_name: str):
 
 def create_user_table(stages: List[str], database_name: str):
     """
-    Creates a table named Users in the Surveydata database with columns for each stage.
+    Creates a table named Users in the given database with columns for each stage.
 
     Args:
         stages (List[str]): List of stages for which columns need to be created.
@@ -90,8 +90,11 @@ def create_user_table(stages: List[str], database_name: str):
     mycursor.execute(f"USE {database_name}")
 
     # Generate the SQL query to create the table
-    columns = ", ".join([f"stage_{name} INT" for name in stages])
-    create_table_query = f"CREATE TABLE IF NOT EXISTS Users (id INT PRIMARY KEY AUTO_INCREMENT, {columns})"
+    columns = ", ".join([f"stage{name}_id INT" for name in stages])
+    foreign_columns = ", ".join(
+        [f"FOREIGN KEY(stage{name}_id) REFERENCES Stage_{name}(id)" for name in stages]
+    )
+    create_table_query = f"CREATE TABLE IF NOT EXISTS Users (id INT PRIMARY KEY AUTO_INCREMENT, {columns},{foreign_columns})"
 
     # Execute the SQL query
     mycursor.execute(create_table_query)
@@ -125,8 +128,8 @@ def update_user_table(foreign_keys: List[int], database_name: str):
     mycursor.execute(f"USE {database_name}")
 
     # Generate the SQL query to update the table
-    placeholders = ", ".join(["%s"] * len(foreign_keys))
-    insert_query = f"INSERT INTO Users VALUES (NULL,{placeholders})"
+    foreign_ids = ", ".join(["%s"] * len(foreign_keys))
+    insert_query = f"INSERT INTO Users VALUES (NULL,{foreign_ids})"
 
     # Execute the SQL query
     mycursor.execute(insert_query, foreign_keys)
@@ -260,23 +263,9 @@ def get_survey_info(history: List[Dict]) -> Dict:
     return survey_info
 
 
-def initialise_database(survey_info: Dict, database_name: str):
-    """
-    Initializes the database by creating the database itself and the user table.
-
-    Args:
-        survey_info (Dict): Dictionary containing survey information.
-        database_name (str): Name of the database to be created.
-
-    Returns:
-        None
-    """
-    create_database(database_name)
-    create_user_table(survey_info["stages"], database_name)
-
-
 def update_database(survey_info: Dict, history: Dict, database_name: str):
     """
+    Creates the necessary tables in the database.
     Updates the database with responses from the chat history.
 
     Args:
@@ -291,11 +280,12 @@ def update_database(survey_info: Dict, history: Dict, database_name: str):
 
     # Update each table with the responses from history
     for stage in survey_info["stages"]:
-        table_name = f"stage_{stage}"
+        table_name = f"Stage_{stage}"
         col_names = generate_col_names(survey_info[stage])
         create_table(col_names, table_name, database_name)
         row_id = update_table(table_name, survey_info[stage], history, database_name)
         foreign_keys.append(row_id)
 
-    # Update the user table with the row id of the response in each table
+    # Create and update the user table with the row id of the response in each table
+    create_user_table(survey_info["stages"], database_name)
     update_user_table(foreign_keys, database_name)

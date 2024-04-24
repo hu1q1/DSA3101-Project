@@ -522,15 +522,13 @@ def end_survey(history: pd.DataFrame) -> str:
     user_response = history.loc[history.index[-1], "user_response"]
     end_message = generate_end_survey_msg(user_response, last_question)
 
-    # Save survey history into mysql database
-    history = history.to_dict(orient="records")
-
     # Generate database name
     files = os.listdir(".")
     history_file = [file for file in files if file.endswith("_history.json")][0]
     database_name = history_file.replace("_history.json", "")
 
-    # Update SQL database
+    # Save survey history into mysql database
+    history = history.to_dict(orient="records")
     survey_info = get_survey_info(history)
     initialise_database(survey_info, database_name)
     update_database(survey_info, history, database_name)

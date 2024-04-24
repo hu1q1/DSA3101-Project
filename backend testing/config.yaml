@@ -1,0 +1,93 @@
+huggingface_llm:
+   endpoint_url: https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1
+   max_new_tokens: 250
+   top_k: 300
+   temperature: 1
+   stop_sequences: [ </s> ]
+
+
+huggingface_embeddingmodel:
+   model_name: all-MiniLM-L6-v2
+   device_for_inference: cpu # Devices: cpu, cuda, mps, npu
+   normalize_embeddings: False # If True, faster dot-product is used. If False, cosine similarity is used.
+
+
+huggingface_sentimentmodel:
+   model: cardiffnlp/twitter-roberta-base-sentiment-latest
+
+
+survey_id: shampoo # Set a unique survey id. Surveys with the same id and questions will be added to a common mysql database.
+
+
+survey_stages:
+  - stage: 0 # Necessary to set up stage 0
+    questions:
+      - id: 1
+        question: What is your name?
+        first_question_of_stage: True # Necessary to set a question as the first question for the first stage, optional for future stages (only one per stage)
+      - id: 2
+        question: What is your age group?
+      - id: 3
+        question: What is your gender identity?
+
+  - stage: 1
+    questions:
+      - id: 4
+        question: What is your hair length?
+      - id: 5
+        question: What is your hair type?
+      - id: 6
+        question: What are your hair concerns?
+      - id: 7
+        question: What is your scalp type?
+      - id: 8
+        question: What are your scalp concerns?
+      - id: 9
+        question: What hair treatments have you done?
+
+  - stage: 2
+    questions:
+      - id: 10
+        question: How often do you wash your hair?
+      - id: 11
+        question: What hair products do you use regularly?
+      - id: 12
+        question: What hair styling products do you use regularly?
+      - id: 13
+        question: How often do you switch hair product brands?
+      - id: 14
+        question: How often do you visit hair salons or barber shops?
+      - id: 15
+        question: What is your ideal hair growth?
+      - id: 16
+        question: "How important is hair health to you? (scale: 1-5)"
+      
+  - stage: 3
+    questions:
+      - id: 17
+        question: Which of the following Pantene product series (collections) are you aware of?
+        first_question_of_stage: True
+      - id: 18
+        question: From where did you know Pantene?
+      - id: 19
+        question: What is your favorite Pantene product and what do you like about it?
+      - id: 20
+        question: What is your least favorite Pantene product and what do you dislike about it?
+      - id: 21
+        question: "How would you rate the overall effectiveness of your favourite Pantene product? (scale: 1-5)"
+      - id: 22
+        question: Would you recommend your current hair products to others? Why?
+        check_user_response: True # Set True if evaluation of response is needed, i.e. posing a follow-up question
+      - id: 23
+        question: What hair improvements would you like to see in the future?
+        check_user_response: True 
+      
+  - stage: 4
+    questions:
+      - id: 24
+        question: When choosing hair products, how important are the following factors to you?
+      - id: 25
+        question: What is your preferred price range for hair products?
+      - id: 26
+        question: Do you prefer to purchase hair products online or in-store? If in-store, which stores?
+        check_user_response: True

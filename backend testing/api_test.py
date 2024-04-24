@@ -1,12 +1,15 @@
+# Import necessary packages
 import requests
+import pandas as pd
+import yaml
+
+# Load YAML file
+with open('backend testing/config.yaml', 'r') as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
+
 
 # Initialize variables
 noError = True
-stageminus1 = [1,2,3]
-stage0 = [4,5,6,7,8,9]
-stage1 = [10,11,12,13,14,15,16]
-stage2 = [17,18,19,20,21,22,23]
-stage3 = [24,25,26]
 
 
 # API endpoint URLs
@@ -44,17 +47,14 @@ if noError:
                 break
             print("LLM Reply:", llm_reply)
             user_response = input("User response: ")
+
             # Assign stage based on question ID and prepare data for POST request
-            if next_question_id in stageminus1:
-                data = {'user_response': user_response, 'stage': 0}
-            elif next_question_id in stage0:
-                data = {'user_response': user_response, 'stage': 1}
-            elif next_question_id in stage1:
-                data = {'user_response': user_response, 'stage': 2}        
-            elif next_question_id in stage2:
-                data = {'user_response': user_response, 'stage': 3} 
-            elif next_question_id in stage3:
-                data = {'user_response': user_response, 'stage': 4}
+            # Load in survey history
+            history = pd.read_json(f"{config["survey_id"]}_history.json")
+
+            # Get current stage
+            stage = history.loc[history.index[-1], "stage"]
+            data = {'user_response': user_response, 'stage': int(stage)}
         else:
             break  
 

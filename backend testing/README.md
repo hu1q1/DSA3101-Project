@@ -40,7 +40,7 @@
 <br>
 
 9) `load_env.py`
-- loads environment variables from .env files in the directory
+- Loads environment variables from .env files in the directory
 <br>
 
 10) `models.py`

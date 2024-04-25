@@ -128,8 +128,8 @@ def update_user_table(foreign_keys: List[int], database_name: str):
     mycursor.execute(f"USE {database_name}")
 
     # Generate the SQL query to update the table
-    foreign_ids = ", ".join(["%s"] * len(foreign_keys))
-    insert_query = f"INSERT INTO Users VALUES (NULL,{foreign_ids})"
+    placeholders = ", ".join(["%s"] * len(foreign_keys))
+    insert_query = f"INSERT INTO Users VALUES (NULL,{placeholders})"
 
     # Execute the SQL query
     mycursor.execute(insert_query, foreign_keys)

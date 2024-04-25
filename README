@@ -1,6 +1,0 @@
-docker compose instruction (ensure that your .env file has a huggingface token and the mysql password set)
-1) open docker desktop
-2) run docker-compose build in your terminal
-3) run docker-compose up
-4) open localhost:5000 to test. Check terminal for any errors
-5) check mysql workbench to check that data is updated

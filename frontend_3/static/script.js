@@ -1,17 +1,15 @@
-// Initialize a list (array) with predefined values
+// Initialize lists to group question ids into their respective stages
 const presurveystage = [1,2,3]; //demographic questions
 const stage0 = [4,5,6,7,8,9]; // customer characteristics
 
 const stage1 = [10,11,12,13,14,15,16]; //customer habits
 
 const stage2 = [17,18,19,20,21,22,23]; //brand or product-related questions
-const stage3 = [24,25,26];
-
-console.log(presurveystage.includes(1));   // REMOVE THIS WHEN DONE // //////////////------_____________--------------------//////////////
+const stage3 = [24,25,26]; //product innovation
 
 let responses = []; // Store all responses here
-let personality = [];
-let finalPersona = '';
+let personality = []; // determine results page based on users' responses to selected questions
+let finalPersona = ''; // determines which results page to display
 
 const mcq = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,21,24,25]
 const shortAns = [1]
@@ -197,12 +195,13 @@ let currentStage = 0
 // Function to start the survey
 function startSurvey() {
 
+    // display loading page while waiting for LLM to generate its response
     document.getElementById('pre-survey').classList.add('hide');
     document.getElementById('loading-page').classList.remove('hide');
 
     //start very first qn
     currentStage = 0;
-    console.log(currentStage)
+    console.log(currentStage) //for debugging
 
     // Fetch the first question of the survey
     fetch('/initialise_survey', { 
@@ -223,7 +222,7 @@ function startSurvey() {
 
     }) 
     .catch(error => { 
-        console.error('Error initializing the survey:', error); 
+        console.error('Error initializing the survey:', error); //notify when there's an error, for debugging
     }); 
 }
 
@@ -243,20 +242,20 @@ function autoExpand(element) {
     element.style.height = (element.scrollHeight) + 'px';
   }
 
-
-function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) given by backend 
-
-    console.log("This is the stage rn", currentStage)/////////////// DEBUGGG  ************* ??????????////////////////////
-
+// display the qn (llm_reply) given by backend 
+function renderQuestion(questionText, qn_index) { 
+    console.log("This is the stage rn", currentStage) // for debugging
+    // remove loading page after LLM has finished generating its response
     document.getElementById('loading-page').classList.add('hide');
     document.getElementById('survey-container').classList.remove('hide');
     
     const headerContainer = document.getElementById('big-container');
-    const questionContainer = document.getElementById('question'); //// OVER HERE !!!!!!!!!!
+    const questionContainer = document.getElementById('question');
     const imageContainer = document.getElementById('image'); // see 'question', 'image', 'answers' etc on index html
     const answersContainer = document.getElementById('answers');
     const nextButton = document.getElementById('next-btn');
 
+    // ensures user starts from top of page with every question
     scrollToSection('big-container')
 
     questionContainer.innerHTML = questionText;
@@ -360,13 +359,14 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
                         answer += option.value;
                     }
             
-                    // Add comma if not the last selected option
+                    // Add comma after each selected option except the last selected option to put all selected options into a single string
                     if (index < selectedOptions.length - 1) {
                         answer += ', ';
                     }
                 });
             }
 
+            //if user has responded and answer is NOT blank, proceed to submit the answer
             if (answer) {
                 submitAnswer(answer, currentStage, qn_index);
             }
@@ -395,7 +395,6 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
         // proceed to submit answer 
         nextButton.onclick = () => {
             submitAnswer(document.getElementById('userInput').value.trim(), currentStage, qn_index);
-            // addPersona(document.getElementById('userInput').value.trim(), qn_index);
         };
     }
     else { // fully open-ended qn; paragraph typing
@@ -420,20 +419,22 @@ function renderQuestion(questionText, qn_index) { //display the qn (llm_reply) g
         // Proceed to submit answer 
         nextButton.onclick = () => {
             submitAnswer(document.getElementById('userInput').value.trim(), currentStage, qn_index);
-            // addPersona(document.getElementById('userInput').value.trim(), qn_index);
         };
     }
 }
 
 function submitAnswer(answer, stageNumber, qn_index) {
-    addPersona(answer, qn_index);
-    console.log(`Submitted: Stage ${stageNumber}, Answer: ${answer}`);
+    // update personality list accordingly, for results page
+    addPersona(answer, qn_index); 
+    console.log(`Submitted: Stage ${stageNumber}, Answer: ${answer}`); // for debugging
     responses.push({stageNumber, answer });
 
+    // display loading page while waiting for LLM to generate its response
     document.getElementById('survey-container').classList.add('hide');
     document.getElementById('loading-page').classList.remove('hide');
 
-    backendNextQn = sendUserAnswerToBackend( {'user_response': answer,'stage': stageNumber} )
+    // calls function to send users' response via API communication to backend
+    sendUserAnswerToBackend( {'user_response': answer,'stage': stageNumber} )
 }
 
 function sendUserAnswerToBackend(userAnswer) { 
@@ -446,6 +447,7 @@ function sendUserAnswerToBackend(userAnswer) {
     }) 
     .then(backendInput => { 
         if (!backendInput.ok) { 
+            // remove loading page when LLM has finished generating its response and show it
             document.getElementById('loading-page').classList.add('hide');
             document.getElementById('survey-container').classList.remove('hide');
             throw new Error('Network response was not ok'); 
@@ -453,7 +455,7 @@ function sendUserAnswerToBackend(userAnswer) {
         return backendInput.json(); //parse the JSON response
     }) 
     .then(backendInput => { 
-        console.log("User's answer sent to backend. Received output from backend:", backendInput); 
+        console.log("User's answer sent to backend. Received output from backend:", backendInput); //for debugging
         if (backendInput['next_question_id'] === -1) {
             showSurveyCompletionPage(backendInput['llm_reply']);
         } else if (checkSameStage(backendInput)) {
@@ -463,15 +465,18 @@ function sendUserAnswerToBackend(userAnswer) {
         }
     }) 
     .catch(error => { 
-        console.error('Error sending user’s answer to backend:', error); 
+        console.error('Error sending user’s answer to backend:', error); //notify when there's an error, for debugging
     }); 
 }
 
+// returns True if next question_id backend supplies is from the same stage as the current question_id, stored in variable currentStage 
+//If so, goes straight into displaying next question from same stage
+//Else, display stage completion first before displaying new question from new stage
 function checkSameStage(backendInput) {
     let next_question_id = backendInput['next_question_id']
 
     if (currentStage === 0) {
-        return (presurveystage.includes(next_question_id)) //returns True if next qn id is still in same stage. same for the below 3 -if statements
+        return (presurveystage.includes(next_question_id)) //returns True if next qn id is still in same stage. same for the below 4 -if statements
     }
     if (currentStage === 1) {
         return (stage0.includes(next_question_id)) 
@@ -486,6 +491,8 @@ function checkSameStage(backendInput) {
         return (stage3.includes(next_question_id))
     }
 }
+
+
 function addPersona(answer, qnNo) {
     console.log(`addPersona called question number is ${qnNo}`)
     if ((answer.includes('Every few months') || answer.includes('Every year')) && qnNo === 13) {
@@ -536,12 +543,11 @@ function displayResult(persona) {
 }
 
 function showStageCompletionImage(next_stage_qn, next_question_id) {
-    console.log('Stage completed. Proceeding to the next stage after user presses the *next* button...'); ///// DEBUGG ***********??????//////////////////
-    
-    // you would likely update the DOM with a message or image.
+    console.log('Stage completed. Proceeding to the next stage after user presses the *next* button...'); // for debugging
 
-        document.getElementById('loading-page').classList.add('hide');
-        document.getElementById('survey-container').classList.remove('hide');
+    // remove loading page to show stage completion gif instead
+    document.getElementById('loading-page').classList.add('hide');
+    document.getElementById('survey-container').classList.remove('hide');
         
     const questionContainer = document.getElementById('question');
     const imageContainer = document.getElementById('image');
@@ -572,41 +578,37 @@ const imageContainer = document.getElementById('imageContainer');
 
 
 function showSurveyCompletionPage(llm_reply) {
-
     //show updated mascot pic for the following stage
-    console.log(currentStage)
-
+    console.log(currentStage) //for debugging
+    // remove loading page to show LLM response to thank the user
     document.getElementById('loading-page').classList.add('hide');
     document.getElementById('survey-container').classList.remove('hide');
 
-    console.log('Survey complete. Showing final result...');
+    console.log('Survey complete. Showing final result...'); // for debugging
     // This part of the code to thank the user
     const questionContainer = document.getElementById('question');
     questionContainer.innerHTML = llm_reply;
-    //document.getElementById('survey-container').innerHTML = llm_reply//'<p>Thank you for participating in our survey!</p>';
-
+   
     //next button to show results page
     const nextButton = document.getElementById('next-btn');
     const imageContainer = document.getElementById('image');
     const answersContainer = document.getElementById('answers');
-
     imageContainer.innerHTML = '';
     answersContainer.innerHTML = '';
     nextButton.style.display = 'block';
 
-
+    // display results page with corresponding personality
     nextButton.onclick = () => {
-
-        //clear the llm text and hide next button
+        // clear the llm text and hide next button
         questionContainer.innerHTML = ''
         nextButton.style.display = 'none'
         document.getElementById('survey-container').classList.add('hide');
 
-        //Decide the personality
-    decidePersona(personality);
+        // Decide the personality
+        decidePersona(personality);
         document.getElementById('results-page').classList.remove('hide');
         const finalStageMascot = document.createElement('img');
-
+        // identify correct image to display
         if (finalPersona === 'Blue') {
             finalStageMascot.src =  "/static/images/blue.gif";
         } else if (finalPersona === 'Green') {
@@ -620,10 +622,9 @@ function showSurveyCompletionPage(llm_reply) {
         } else if (finalPersona === 'Rainbow') {
             finalStageMascot.src =  "/static/images/rainbow.gif";
         }
-        // Display the final personality result here
+        // Display the final personality result here, adjusting its size
         finalStageMascot.style.width = '400px'; // Set width to 400 pixels
         finalStageMascot.style.height = 'auto'; // Maintain aspect ratio
-
         const tryNew = document.getElementById('results-page');
         tryNew.appendChild(finalStageMascot);
         }; 

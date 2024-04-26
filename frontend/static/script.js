@@ -4,6 +4,7 @@
 // For open ended questions, leave options as []
 // There are four types available: ['shortAns', 'mcq', 'multipleResponse', 'open'].
 // Note that 'multipleResponse' must be accompanied by 'mcq'. For 'open' and 'shortAns' questions, please leave the options as []
+// stage must start from 0
 
 const surveyObject = {
     //stage 0
@@ -213,7 +214,7 @@ const decidePersonaCriteria = {
 /****************************Do not edit anything below this line****************************************/
 
 
-// given a survey object, returns the predefinedAnswers object found in script.js
+// given a survey object, returns a dictionary containing the question number and its image and options
 function transformSurveyObject(surveyObject) {
     const answers = {};
 
@@ -237,7 +238,7 @@ function transformSurveyObject(surveyObject) {
     return answers;
 }
 
-// Given a survey object, returns the different stage objects found in script.js together in a dict
+// Given a survey object, returns the different stage objects together in a dict
 function getStages(surveyObject) {
     const stages = {}
 
@@ -255,7 +256,7 @@ function getStages(surveyObject) {
     return stages;
 }
 
-// Given a survey object, returns the different type objects found in script.js together in a dict
+// Given a survey object, returns the different type objects together in a dict
 function getTypes(surveyObject) {
     // Initialise the different types of questions
     const types = { mcq: [], shortAns: [], multipleResponse: [] }
@@ -278,8 +279,6 @@ const predefinedAnswers = transformSurveyObject(surveyObject);
 const stages = getStages(surveyObject)
 const types = getTypes(surveyObject)
 
-console.log(stages)
-
 let responses = []; // Store all responses here
 let personality = []; // determine results page based on users' responses to selected questions
 let finalPersona = ''; // determines which results page to display
@@ -288,11 +287,7 @@ const mcq = types['mcq']
 const shortAns = types['shortAns']
 const multipleResponse = types['multipleResponse']
 
-
-
-
 let currentStage = 0
-
 
 // Function to start the survey
 function startSurvey() {

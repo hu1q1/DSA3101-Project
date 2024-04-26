@@ -11,3 +11,4 @@
 3) `Dockerfile`: The dockerfile used to create an image for the frontend application
 4) `app.py`: The Python file responsible for running the frontend application
 5) `requirements.txt`: File listing the dependencies required to run the frontend application
+6) `app_simulate_backend.py`: A Python file that simulates the backend's handling of API calls. Useful for unit testing for quick checks on what the UI looks like when changes are made to the html, css and js files. 

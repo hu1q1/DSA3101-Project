@@ -1,13 +1,33 @@
 // Welcome to the script for Convey. If you're here to configure the survey, simply edit surveyObject and stageImages. 
 
-// For questions without images, leave qn_image as ""
-// For open ended questions, leave options as []
-// There are four types available: ['shortAns', 'mcq', 'multipleResponse', 'open'].
-// Note that 'multipleResponse' must be accompanied by 'mcq'. For 'open' and 'shortAns' questions, please leave the options as []
-// stage must start from 0
+// The following is the structure of each question in the surveyObject
+// <question id>: {
+//      qn_image: <path to question image; add to /static/images folder>,
+//      options: <list of options for multiple choice/ response questions; eg. [1, 10, 'Normal', 'Others']>,
+//      stage: <survey stage>,
+//      type: <question type>
+// }
+
+// Notes: 
+// 1. For questions without images, specify -> qn_image: "" 
+// 2. There are four types available: ['mcq', 'multipleResponse', 'shortAns', 'open'].
+//      Meaning of each question type: 
+//      'mcq' = multiple choice question – only one option can be selected; round option buttons will be shown
+//      'multipleResponse' = multiple response question – more than one option can be selected; square option buttons will be shown
+//      'shortAns' = short answer question; a short text box will be shown
+//      'open' = open ended (long response) question; an extendable text box will be shown, the height of text box adjusts as user types
+// 3. For questions of types 'shortAns' and 'open', specify -> options: []
+// 4. For questions of types 'mcq' and 'multipleResponse', to have an 'Others' option with a textbox shown for custom user answer, specify -> options: ['Others', <other options if any>]
+// 5. For multiple response questions, specify -> type: ['mcq', 'multipleResponse']
+// 6. Suvery stages 'stage:' must start from 0
+//       For product surveys, questions can generally be categorized into 'demographic profile', 'comsumer habits and characteristics', 'product feedback' and 'purchase decisions'  
+// 7. General mascot gifs and stage completion mascot gifs can be found in DSA3101-Project/frontend/static/images, alongside some specific ones, feel free to use them accordingly
+// 8. For further customisability of the images to show on the results page, do navigate to the section on // Identify result image to display to update the image paths
+
+/******************************* Begin customising your survey below this line!:) *******************************************************************************************************/
 
 const surveyObject = {
-    //stage 0
+    // Stage 0
     1: {
         qn_image: "/static/images/0_oh_hi.gif",
         options: [],
@@ -27,7 +47,7 @@ const surveyObject = {
         type: ['mcq']
     },
 
-    //stage 1
+    // Stage 1
     4: {
         qn_image: "/static/images/hair_length.gif",
         options: ['Short', 'Medium', 'Long'],
@@ -65,7 +85,7 @@ const surveyObject = {
         type: ['mcq', 'multipleResponse']
     },
 
-    //stage 2
+    // Stage 2
     10: {
         qn_image: "/static/images/wash_frequency.gif",
         options: ['2-3 times per day', 'Once per day', 'Once every 2-3 days', 'Others'],
@@ -104,7 +124,6 @@ const surveyObject = {
         type: ['mcq', 'multipleResponse']
     },
 
-    //scale
     16: {
         qn_image: "/static/images/hair_health.gif",
         options: [1, 2, 3, 4, 5],
@@ -112,7 +131,7 @@ const surveyObject = {
         type: ['mcq']
     },
 
-    //stage 3
+    // Stage 3
     17: {
         qn_image: "/static/images/product_awareness.gif",
         options: ['Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection', 'Nutrient blend collection', 'None'],
@@ -138,7 +157,6 @@ const surveyObject = {
         type: ['open']
     },
 
-    //scale
     21: {
         qn_image: "/static/images/effectiveness.gif", /* overall effectiveness */
         options: [1, 2, 3, 4, 5],
@@ -158,7 +176,7 @@ const surveyObject = {
         type: ['open']
     },
 
-    //stage 4
+    // Stage 4
     24: {
         qn_image: "/static/images/factors.gif", /* importance of factors */
         options: ['Natural ingredients', 'Fragrance', 'Celebrity endorsements or influencer recommendations', 'Specific hair concerns', 'Price', 'Multi-functional benefits', 'Eco-friendly or sustainable packaging', 'Hair stylists for salon professionals', 'Advertising campaigns or promotions', 'Others'],
@@ -180,14 +198,16 @@ const surveyObject = {
 
 };
 
+// Add stage completion images here
 const stage_images = {
     0: "/static/images/aft_presurvey.gif", 
     1: "/static/images/growth0.gif", 
     2: "/static/images/growth1.gif",
     3: "/static/images/growth2.gif",
-    // 4: "/static/images/growth3.gif"
+    // 4: // Results page will be shown instead of stage completion
 };
 
+// Add persona criteria here
 const decidePersonaCriteria = {
     Blue: {
         q_number: 13,
@@ -211,10 +231,10 @@ const decidePersonaCriteria = {
     },
 };
 
-/****************************Do not edit anything below this line****************************************/
+/******************************* Do not edit anything below this line *****************************************************************/
 
 
-// given a survey object, returns a dictionary containing the question number and its image and options
+// Given a survey object, returns a dictionary containing the question number and its image and options
 function transformSurveyObject(surveyObject) {
     const answers = {};
 
@@ -222,7 +242,7 @@ function transformSurveyObject(surveyObject) {
         // Extract question image
         const qn_image = questionData.qn_image;
 
-        // check for images and options and append to answers
+        // Check for images and options and append to answers
         if (questionData.options && questionData.options.length && qn_image !== "") {
             answers[questionNum] = [{ qn_image, options: questionData.options }];
         } else if (questionData.options && questionData.options.length) {
@@ -238,7 +258,7 @@ function transformSurveyObject(surveyObject) {
     return answers;
 }
 
-// Given a survey object, returns the different stage objects together in a dict
+// Given a survey object, returns the different stage objects together in a dictionary
 function getStages(surveyObject) {
     const stages = {}
 
@@ -249,7 +269,6 @@ function getStages(surveyObject) {
             // If not, create a new array for the stage
             stages[stage] = [];
         }
-
         // Add the question number to the corresponding stage
         stages[stage].push(Number(questionNum));
     }
@@ -292,11 +311,11 @@ let currentStage = 0
 // Function to start the survey
 function startSurvey() {
 
-    // display loading page while waiting for LLM to generate its response
+    // Display loading page while waiting for LLM to generate its response
     document.getElementById('pre-survey').classList.add('hide');
     document.getElementById('loading-page').classList.remove('hide');
 
-    //start very first qn
+    // Start very first qn
     currentStage = 0;
     console.log(currentStage) //for debugging
 
@@ -323,7 +342,7 @@ function startSurvey() {
         });
 }
 
-
+// Function to ensure scroll is at the top of the page whenever a new question is displayed 
 function scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (section) {
@@ -339,20 +358,21 @@ function autoExpand(element) {
     element.style.height = (element.scrollHeight) + 'px';
 }
 
-// display the qn (llm_reply) given by backend 
+// Function to display the question (llm_reply) given by backend 
 function renderQuestion(questionText, qn_index) {
     console.log("This is the stage rn", currentStage) // for debugging
     // remove loading page after LLM has finished generating its response
     document.getElementById('loading-page').classList.add('hide');
     document.getElementById('survey-container').classList.remove('hide');
 
+    // These reference the elements on index.html
     const headerContainer = document.getElementById('big-container');
-    const questionContainer = document.getElementById('question');
-    const imageContainer = document.getElementById('image'); // see 'question', 'image', 'answers' etc on index html
+    const questionContainer = document.getElementById('question'); 
+    const imageContainer = document.getElementById('image'); 
     const answersContainer = document.getElementById('answers');
     const nextButton = document.getElementById('next-btn');
 
-    // ensures user starts from top of page with every question
+    // Ensures user starts from top of page with every question
     scrollToSection('big-container')
 
     questionContainer.innerHTML = questionText;
@@ -369,11 +389,11 @@ function renderQuestion(questionText, qn_index) {
         imageContainer.appendChild(image);
     }
 
-    answersContainer.innerHTML = ''; //empty textbox first
+    answersContainer.innerHTML = ''; // Display an empty textbox first
     nextButton.style.display = 'block'; // Show the next button
-    nextButton.disabled = true; // Initially disable the next button
+    nextButton.disabled = true; // Disable the next button initially
 
-    if (mcq.includes(qn_index)) { //handle mcq & open-ended qns accordingly
+    if (mcq.includes(qn_index)) { // Handle MCQ, MRQ & open-ended questions (short/ long answer) accordingly
         let qnType = 'radio'
         if (multipleResponse.includes(qn_index)) {
             qnType = 'checkbox'
@@ -399,16 +419,13 @@ function renderQuestion(questionText, qn_index) {
             container.appendChild(optionInput);
             container.appendChild(label);
 
-            if (option in mcqQuestion[0]) { //display images with corresponding text
+            if (option in mcqQuestion[0]) { // Display images (if applicable) with corresponding text
                 const imageSrc = mcqQuestion[0][option];
                 if (imageSrc) {
                     const image = document.createElement('img');
                     image.src = imageSrc;
                     image.alt = option; // Set alt text for accessibility
                     container.appendChild(image);
-
-                    // image.style.maxWidth = '360px'; /* Adjust the size of the question images */
-                    // image.style.maxHeight = '180px';
                 }
             }
 
@@ -416,7 +433,7 @@ function renderQuestion(questionText, qn_index) {
                 const textInput = document.createElement('input');
                 textInput.type = 'text';
                 textInput.id = 'otherText';
-                textInput.style.display = 'none'; // Initially hidden
+                textInput.style.display = 'none'; // Hidden initially 
 
                 optionInput.onclick = () => {
                     textInput.style.display = 'inline'; // Show the text input when 'Others' is selected
@@ -429,8 +446,6 @@ function renderQuestion(questionText, qn_index) {
                 };
 
                 container.appendChild(textInput);
-
-
             }
 
             answersContainer.appendChild(container);
@@ -440,11 +455,11 @@ function renderQuestion(questionText, qn_index) {
         nextButton.onclick = () => {
             let answer = '';
             const selectedOption = document.querySelector('input[name="answer"]:checked');
-            if (qnType === 'radio') { // single choice mcq
+            if (qnType === 'radio') { // Multiple Choice Question (MCQ)
                 if (selectedOption) {
                     answer = selectedOption.value === 'Others' ? document.getElementById('otherText').value.trim() : selectedOption.value;
                 }
-            } else { //multiple responses mcq
+            } else { // Multiple Response Question (MRQ)
                 const selectedOptions = document.querySelectorAll('input[name="answer"]:checked');
                 selectedOptions.forEach((option, index) => {
                     if (option.value === 'Others') {
@@ -455,7 +470,6 @@ function renderQuestion(questionText, qn_index) {
                     } else {
                         answer += option.value;
                     }
-
                     // Add comma after each selected option except the last selected option to put all selected options into a single string
                     if (index < selectedOptions.length - 1) {
                         answer += ', ';
@@ -463,7 +477,7 @@ function renderQuestion(questionText, qn_index) {
                 });
             }
 
-            //if user has responded and answer is NOT blank, proceed to submit the answer
+            // If user has responded and answer is NOT blank, proceed to submit the answer
             if (answer) {
                 submitAnswer(answer, currentStage, qn_index);
             }
@@ -478,7 +492,7 @@ function renderQuestion(questionText, qn_index) {
         textInput.setAttribute('id', 'userInput'); // Set input ID to 'userInput'
         textInput.setAttribute('name', 'userInput'); // Set input name to 'userInput'
         const answersContainer = document.getElementById('answers');
-        answersContainer.innerHTML = ''; //empty textbox first
+        answersContainer.innerHTML = ''; // Empty textbox first
         // Append the input element to the answer container
         answersContainer.appendChild(textInput);
 
@@ -489,12 +503,12 @@ function renderQuestion(questionText, qn_index) {
             nextButton.disabled = !textInput.value.trim(); // Disable if empty, enable if text is entered
         };
 
-        // proceed to submit answer 
+        // Submit answer 
         nextButton.onclick = () => {
             submitAnswer(document.getElementById('userInput').value.trim(), currentStage, qn_index);
         };
     }
-    else { // fully open-ended qn; paragraph typing
+    else { // Open-ended question; long-response, paragraph typing
         // Create a textarea element
         var textInput = document.createElement('textarea');
         // Set attributes for the textarea element
@@ -513,7 +527,7 @@ function renderQuestion(questionText, qn_index) {
             nextButton.disabled = !textInput.value.trim(); // Disable if empty, enable if text is entered
         };
 
-        // Proceed to submit answer 
+        // Submit answer 
         nextButton.onclick = () => {
             submitAnswer(document.getElementById('userInput').value.trim(), currentStage, qn_index);
         };
@@ -521,16 +535,16 @@ function renderQuestion(questionText, qn_index) {
 }
 
 function submitAnswer(answer, stageNumber, qn_index) {
-    // update personality list accordingly, for results page
+    // Update personality list accordingly for results page
     addPersona(answer, qn_index);
-    console.log(`Submitted: Stage ${stageNumber}, Answer: ${answer}`); // for debugging
+    console.log(`Submitted: Stage ${stageNumber}, Answer: ${answer}`); // For debugging
     responses.push({ stageNumber, answer });
 
-    // display loading page while waiting for LLM to generate its response
+    // Display loading page while waiting for LLM to generate its response
     document.getElementById('survey-container').classList.add('hide');
     document.getElementById('loading-page').classList.remove('hide');
 
-    // calls function to send users' response via API communication to backend
+    // Call function to send users' response via API communication to backend
     sendUserAnswerToBackend({ 'user_response': answer, 'stage': stageNumber })
 }
 
@@ -544,7 +558,7 @@ function sendUserAnswerToBackend(userAnswer) {
     })
         .then(backendInput => {
             if (!backendInput.ok) {
-                // remove loading page when LLM has finished generating its response and show it
+                // Remove the loading page when LLM has finished generating its response and show it
                 document.getElementById('loading-page').classList.add('hide');
                 document.getElementById('survey-container').classList.remove('hide');
                 throw new Error('Network response was not ok');
@@ -552,7 +566,7 @@ function sendUserAnswerToBackend(userAnswer) {
             return backendInput.json(); //parse the JSON response
         })
         .then(backendInput => {
-            console.log("User's answer sent to backend. Received output from backend:", backendInput); //for debugging
+            console.log("User's answer sent to backend. Received output from backend:", backendInput); // For debugging
             if (backendInput['next_question_id'] === -1) {
                 showSurveyCompletionPage(backendInput['llm_reply']);
             } else if (checkSameStage(backendInput)) {
@@ -562,11 +576,11 @@ function sendUserAnswerToBackend(userAnswer) {
             }
         })
         .catch(error => {
-            console.error('Error sending user’s answer to backend:', error); //notify when there's an error, for debugging
+            console.error('Error sending user’s answer to backend:', error); // For debugging; notify when there's an error
         });
 }
 
-// returns True if next question_id backend supplies is from the same stage as the current question_id, stored in variable currentStage 
+// Returns True if next question_id backend supplies is from the same stage as the current question_id, stored in variable currentStage 
 // If so, goes straight into displaying next question from same stage
 // Else, display stage completion first before displaying new question from new stage
 function checkSameStage(backendInput) {
@@ -575,7 +589,7 @@ function checkSameStage(backendInput) {
     return (stages[stageKey].includes(next_question_id))
 }
 
-// check if question and answer meet personality criteria
+// Check if question and answer meet personality criteria
 function addPersona(answer, qnNo) {
     console.log(`addPersonaDynamic called, question number is ${qnNo}`);
     for (const [persona, criteria] of Object.entries(decidePersonaCriteria)) {
@@ -587,7 +601,7 @@ function addPersona(answer, qnNo) {
     }
 }
 
-// decide one final result for display after survey completion
+// Decide one final result for display after survey completion
 function decidePersona(p) {
     console.log(`Deciding persona from ${p}`)
     if (p.length === 0) {
@@ -601,9 +615,9 @@ function decidePersona(p) {
 }
 
 function showStageCompletionImage(next_stage_qn, next_question_id) {
-    console.log('Stage completed. Proceeding to the next stage after user presses the *next* button...'); // for debugging
+    console.log('Stage completed. Proceeding to the next stage after user presses the *next* button...'); // For debugging
 
-    // remove loading page to show stage completion gif instead
+    // Hide loading page gif to show stage completion gif instead
     document.getElementById('loading-page').classList.add('hide');
     document.getElementById('survey-container').classList.remove('hide');
 
@@ -617,16 +631,16 @@ function showStageCompletionImage(next_stage_qn, next_question_id) {
     answersContainer.innerHTML = `Stage ${currentStage} completed!`;
     nextButton.style.display = 'block';
 
-    //show updated mascot pic for the following stage
+    // Show updated mascot gif for the following stage
     const newStageMascot = document.createElement('img');
     newStageMascot.src = stage_images[currentStage];
     newStageMascot.alt = `stage ${currentStage} mascot`; // Set alt text for accessibility
     answersContainer.appendChild(newStageMascot);
 
-    //set up for the following stage
+    // Set up for the following stage
     currentStage++;
 
-    //user presses button to proceed to next stage 
+    // Proceed to the next stage when user presses the *next* button
     nextButton.onclick = () => {
         renderQuestion(next_stage_qn, next_question_id);
     };
@@ -636,18 +650,18 @@ const imageContainer = document.getElementById('imageContainer');
 
 
 function showSurveyCompletionPage(llm_reply) {
-    //show updated mascot pic for the following stage
-    console.log(currentStage) //for debugging
-    // remove loading page to show LLM response to thank the user
+    // Show updated mascot gif for the following stage
+    console.log(currentStage) // For debugging
+    // Hide loading page and show LLM response to thank the user
     document.getElementById('loading-page').classList.add('hide');
     document.getElementById('survey-container').classList.remove('hide');
 
-    console.log('Survey complete. Showing final result...'); // for debugging
+    console.log('Survey complete. Showing final result...'); // For debugging
     // This part of the code to thank the user
     const questionContainer = document.getElementById('question');
     questionContainer.innerHTML = llm_reply;
 
-    //next button to show results page
+    // Next button to show results page
     const nextButton = document.getElementById('next-btn');
     const imageContainer = document.getElementById('image');
     const answersContainer = document.getElementById('answers');
@@ -655,9 +669,9 @@ function showSurveyCompletionPage(llm_reply) {
     answersContainer.innerHTML = '';
     nextButton.style.display = 'block';
 
-    // display results page with corresponding personality
+    // Display results page with corresponding personality
     nextButton.onclick = () => {
-        // clear the llm text and hide next button
+        // Clear the LLM text and hide next button
         questionContainer.innerHTML = ''
         nextButton.style.display = 'none'
         document.getElementById('survey-container').classList.add('hide');
@@ -666,7 +680,8 @@ function showSurveyCompletionPage(llm_reply) {
         decidePersona(personality);
         document.getElementById('results-page').classList.remove('hide');
         const finalStageMascot = document.createElement('img');
-        // identify correct image to display
+
+        // Identify result image to display
         if (finalPersona === 'Blue') {
             finalStageMascot.src = "/static/images/blue.gif";
         } else if (finalPersona === 'Green') {
@@ -680,9 +695,10 @@ function showSurveyCompletionPage(llm_reply) {
         } else if (finalPersona === 'Rainbow') {
             finalStageMascot.src = "/static/images/rainbow.gif";
         }
+
         // Display the final personality result here, adjusting its size
-        finalStageMascot.style.width = '400px'; // Set width to 400 pixels
-        finalStageMascot.style.height = 'auto'; // Maintain aspect ratio
+        finalStageMascot.style.width = '400px'; 
+        finalStageMascot.style.height = 'auto'; 
         const tryNew = document.getElementById('results-page');
         tryNew.appendChild(finalStageMascot);
     };

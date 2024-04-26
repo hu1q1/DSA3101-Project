@@ -93,5 +93,54 @@ Once you have cloned the repository, navigate to the project directory:
 cd DSA3101-Project
 ```
 
-## Running the app
-TODO: update when frontend does their config section
+## Usage
+
+### Running the app
+After cloning the repository, run the following command in the ./DSA3101-Project directory to build the required images and run them
+
+```bash
+docker-compose up --build
+```
+
+Go to localhost:5000 in your browser to start the survey. To stop the app, type Ctrl+C in the terminal it is running. To start the app again run the following command.
+
+```bash
+docker-compose up
+```
+
+Run the first command instead if there are any changes to the configuration of the backend or frontend.
+
+### Configuring the Backend
+
+To make use of the backend app for your own survey, edit the ‘config.yaml’ file in the repository before building the docker containers. The app makes use of three Hugging Face models, a text generation model for question generation, an embedding model to convert the questions into embeddings and a sentiment model to gauge the sentiment of the survey response. These models have already been set in config.yaml but can be changed according to your preference.
+
+survey_id will be used to name the database. The questions provided should be unique to the survey_id. If a different set of questions is to be used, ensure that survey_id is changed as well.
+
+Under survey_stages, the stages of the survey and survey questions can be set. Please follow these guidelines when configuring:
+1. The stage must start with stage 0, and the first question of the survey must be specified
+2. Set ‘first_question_of_stage’ to ‘True’ for the first question
+3. Each question requires a corresponding id
+4. If a follow-up question is required for the specific question, add ‘check_user_response’ under the question and set it to ‘True’.
+
+### Configuring the Frontend
+
+In the frontend portion, the user can edit the `script.js` file in the `static` folder, specifically the contents of `surveyObject` to customise the survey questions’ options and the image to be shown for each question, as well as `stageImages` for the image shown after each stage completion. 
+
+The stage number and question id should correspond to the survey questions set in the backend portion to run Convey smoothly.
+
+Please follow the guidelines when configuring:
+1. There are four question types available: 'shortAns', 'mcq', 'multipleResponse', 'open'. Note that 'multipleResponse' must be accompanied by 'mcq'
+2. For 'open' and 'shortAns' questions, please leave the options as []
+3. For questions without images, leave qn_image as an empty string ""
+
+### Use of MySQL Workbench
+
+To access the survey answers stored in the MySQL database, set up a new connection in MySQL Workbench. The connection name can be anything the user decides. 
+1. Set port to 3307 and the username to remain as root
+2. Click on 'Store in Vault' to store the password for the connection
+3. Click on 'Test Connection' and ensure there are no errors
+4. Change the password in the docker-compose file to your password, and add MYSQL_ROOT_PASSWORD = your_password_here to your .env file.
+
+Ensure that your docker container for mysql is running to access the MySQL database. Querying the database would give you the survey records. For example, start with 'USE your_survey_database_name' and 'SELECT * FROM Stage_0' to obtain the records of stage 0 in the survey.
+
+Click on the top right floppy disk button to export the results.

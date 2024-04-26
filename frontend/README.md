@@ -4,7 +4,7 @@
     1) `index.html`: File for the basic structure of the website
        
 2) `static` Folder containing CSS & JS files and images & gifs
-    1) `images`: Folder containing all images used in the survey, including the mascot, choices, and results
+    1) `images`: Folder containing all images used in the survey including mascot gifs, loading page gif, result images, as well as images for general use
     2) `styles.css` File for styling the HTML pages
     3) `script.js` File to provide functionality for the HTML pages
        

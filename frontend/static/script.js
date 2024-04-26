@@ -184,6 +184,29 @@ const stage_images = {
     // 4: "/static/images/growth3.gif"
 };
 
+const decidePersonaCriteria = {
+    Blue: {
+        q_number: 13,
+        answer: ['Every few months', 'Every year']
+    },
+    Green: {
+        q_number: 11,
+        answer: ['Hair mask', 'Leave-in treatments']
+    },
+    Blue: {
+        q_number: 10,
+        answer: ['2-3 times per day', 'Once per day']
+    },
+    Blue: {
+        q_number: 18,
+        answer: ['Word of mouth', 'Retail shops']
+    },
+    Blue: {
+        q_number: 9,
+        answer: ['Colored', 'Bleached']
+    },
+};
+
 /****************************Do not edit anything below this line****************************************/
 
 
@@ -554,24 +577,14 @@ function checkSameStage(backendInput) {
     return (stages[stageKey].includes(next_question_id))
 }
 
-
 function addPersona(answer, qnNo) {
-    console.log(`addPersona called question number is ${qnNo}`)
-    if ((answer.includes('Every few months') || answer.includes('Every year')) && qnNo === 13) {
-        personality.push('Blue');
-        console.log(`Persona added: Blue, Current persona: ${personality}`);
-    } else if ((answer.includes('Hair mask') || answer.includes('Leave-in treatments')) && qnNo === 11) {
-        personality.push('Green');
-        console.log(`Persona added: Green, Current persona: ${personality}`);
-    } else if ((answer.includes('2-3 times per day') || answer.includes('Once per day')) && qnNo === 10) {
-        personality.push('Yellow');
-        console.log(`Persona added: Yellow, Current persona: ${personality}`);
-    } else if ((answer.includes('Word of mouth') || answer.includes('Retail shops')) && qnNo === 18) {
-        personality.push('Red');
-        console.log(`Persona added: Red, Current persona: ${personality}`);
-    } else if ((answer.includes('Colored') || answer.includes('Bleached')) && qnNo === 9) {
-        personality.push('Purple');
-        console.log(`Persona added: Purple, Current persona: ${personality}`);
+    console.log(`addPersonaDynamic called, question number is ${qnNo}`);
+    for (const [persona, criteria] of Object.entries(decidePersonaCriteria)) {
+        if (criteria.q_number === qnNo && criteria.answer.some(ans => answer.includes(ans))) {
+            personality.push(persona);
+            console.log(`Persona added: ${persona}, Current persona: ${personality}`);
+            return;
+        }
     }
 }
 

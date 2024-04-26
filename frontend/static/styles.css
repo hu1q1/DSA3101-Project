@@ -1,3 +1,4 @@
+/* -------------- BACKGROUND-------------- */
 body {
     margin: 0;
     padding: 0;
@@ -10,12 +11,12 @@ body {
     height: 1000;
 }
 
-/* -------------- FOR SURVEY -------------- */
+/* -------------- SURVEY CONTAINER-------------- */
 #big-container {
     max-width: 400px;
     /* text-align: center; */
     margin: auto;
-    margin-top: 10px; /* margin above the container */ 
+    margin-top: 20px; /* margin above the container */ 
     margin-bottom: 10px;
     padding: 20px;
     padding-top: 12px;
@@ -35,10 +36,9 @@ body {
     padding-left: 20px;
     padding-right: 20px;
     padding-bottom: 7px;
-    
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif; /* 'Poppins' is similar to the font used on P&G's webpage */
     font-size: 17.5px; 
-    background-color: #ffffea;
+    background-color: #ffffeff7;
     border-radius: 5px;
     /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
     width: 90%; 
@@ -57,77 +57,10 @@ body {
 #survey-container img, #loading-page img {
     max-width: 100%; /* make sure the image doesn't exceed the container width */
     height: auto;
-    max-height: 200px; 
+    max-height: 200px; /* Limit the height of image shown */ 
     display: block; 
     margin: auto;
     font-size: 16px;
-}
-
-
-#disclaimer {
-    font-size: 14.8px;
-}
-
-.hide {
-    display: none;
-}
-
-button {
-    font-family: 'Platypi';
-    font-size: 15px;
-    color: #003DA7;
-    font-weight: bold;
-    display: block;
-    width: 100%;
-    padding: 8.5px 20px;
-    padding-bottom: 10px;
-    margin-top: 25px;
-    background-color: #ffffff;
-    border: 2.5px solid #003DA7;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #003DA7;
-    color:#ffffff;
-}
-
-input[type="text"], select {
-    width: 95%;
-    padding: 10px;
-    margin: 10px auto;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-family: 'Poppins';
-    font-size: 14px;
-}
-
-input[type="radio"], input[type="checkbox"]  {
-    margin-right: 10px; /* Adjust the right margin to increase space */
-    border: 10px #000000;
-}
-
-label {
-    font-size: 17px; /* Adjust the font size to your preference */
-}
-
-textarea {
-    width: 95%; /* Set width to 95% */
-    padding: 10px; /* Add padding */
-    padding-bottom: 0px;
-    margin: 10px auto; /* Center horizontally with margin */
-    border-radius: 5px; /* Add border radius */
-    border: 1px solid #ddd; /* Add border */
-    font-family: 'Poppins'; /* Set font family */
-    font-size: 14px; /* Set font size */
-    height: 50px;
-    overflow-y: hidden; /* Hide vertical scrollbar initially */
-  }
-
-textarea.expanded {
-    height: auto; /* Auto-expand height when typing */
-    overflow-y: auto; /* Show vertical scrollbar when expanded */
 }
 
 header {
@@ -138,7 +71,7 @@ header {
 
 header h1 {
     font-size: 48px; 
-    color: #003DA7;
+    color: #003DA7; /* Dark Blue used on P&G's webpage*/
     margin: 2 0;
 }
 
@@ -146,7 +79,78 @@ header p {
     font-size: 18px; 
     color: #1b1b1b;
 }
+
+#disclaimer {
+    font-size: 14.8px;
+}
+
+.hide {
+    display: none;
+}
+
+/* Similar button styling and hover as on P&G's webpage */
+button {
+    font-family: 'Platypi', sans-serif;
+    font-size: 15px;
+    color: #003DA7;
+    font-weight: bold;
+    display: block;
+    width: 100%;
+    padding: 8.5px 20px;
+    padding-bottom: 10px;
+    margin-top: 25px;
+    background-color: #ffffff;
+    border: 2.5px solid #003DA7; /* Dark Blue used on P&G's webpage*/
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #003DA7; /* Dark Blue used on P&G's webpage*/
+    color:#ffffff;
+}
+
+
+/* For MCQ (round option buttons) & MRQ (square option buttons) */
+input[type="radio"], input[type="checkbox"]  {
+    margin-right: 10px; /* Adjust the right margin to increase space */
+    border: 10px #000000;
+}
+
+/* For short answer questions (short text box) */
+input[type="text"], select {
+    width: 95%;
+    padding: 10px;
+    margin: 10px auto;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+/* For open-ended long answer questions (tall text box) */
+textarea {
+    width: 95%; 
+    padding: 10px; 
+    padding-bottom: 0px;
+    margin: 10px auto; /* Center horizontally with margin */
+    border-radius: 5px; 
+    border: 1px solid #ddd; 
+    font-family: 'Poppins', sans-serif; 
+    font-size: 14px; 
+    height: 50px;
+    overflow-y: hidden; /* Hide vertical scrollbar initially */
+  }
+
+textarea.expanded {
+    height: auto; /* Auto-expand height when typing */
+    overflow-y: auto; /* Show vertical scrollbar when expanded */
+}
   
+label {
+    font-size: 17px; /* Adjust the font size to your preference */
+}
+
 footer {
     text-align: center;
 }

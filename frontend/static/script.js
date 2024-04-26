@@ -1,7 +1,10 @@
 // Welcome to the script for Convey. If you're here to configure the survey, simply edit surveyObject and stageImages. 
 
-//For questions without images, leave qn_image as ""
-//For open ended questions, leave options as []
+// For questions without images, leave qn_image as ""
+// For open ended questions, leave options as []
+// There are four types available: ['shortAns', 'mcq', 'multipleResponse', 'open'].
+// Note that 'multipleResponse' must be accompanied by 'mcq'. For 'open' and 'shortAns' questions, please leave the options as []
+
 const surveyObject = {
     //stage 0
     1: {

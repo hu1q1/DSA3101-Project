@@ -1,183 +1,175 @@
-// Initialize lists to group question ids into their respective stages
-const presurveystage = [1,2,3]; //demographic questions
-const stage0 = [4,5,6,7,8,9]; // customer characteristics
+// Welcome to the script for Convey. If you're here to configure the survey, simply edit surveyObject and stageImages.
+const surveyObject = {
+    //stage 0
+    1: {
+        qn_image: "/static/images/0_oh_hi.gif",
+        options: [],
+        stage: 0,
+        type: ['shortAns']
+    },
+    2: {
+        qn_image: "/static/images/0_smiling.gif",
+        options: ['<18', '18-24', '25-34', '35-44', '45-54', '55-64', '65-74', '>74'],
+        stage: 0,
+        type: ['mcq']
+    },
+    3: {
+        qn_image: "/static/images/0_chat.gif",
+        options: ['Male', 'Female', 'Non-binary', 'Prefer not to say'],
+        stage: 0,
+        type: ['mcq']
+    },
 
-const stage1 = [10,11,12,13,14,15,16]; //customer habits
+    //stage 1
+    4: {
+        qn_image: "/static/images/hair_length.gif",
+        options: ['Short', 'Medium', 'Long'],
+        stage: 1,
+        type: ['mcq']
+    },
+    5: {
+        qn_image: "/static/images/hair_type.gif",
+        options: ['Straight', 'Wavy', 'Curly', 'Others'],
+        stage: 1,
+        type: ['mcq']
+    },
+    6: {
+        qn_image: "/static/images/hair_concerns.gif",
+        options: ['Split ends', 'Breakage', 'Thinning', 'None', 'Others'],
+        stage: 1,
+        type: ['mcq', 'multipleResponse']
+    },
+    7: {
+        qn_image: "/static/images/concerned.gif",
+        options: ['Dry', 'Oily', 'Normal', 'Others'],
+        stage: 1,
+        type: ['mcq']
+    },
+    8: {
+        qn_image: "/static/images/scalp_concerns.gif",
+        options: ['Sensitive', 'Allergies', 'Dandruff', 'Dryness', 'None', 'Others'],
+        stage: 1,
+        type: ['mcq', 'multipleResponse']
+    },
+    9: {
+        qn_image: "/static/images/hair_treatments.gif",
+        options: ['Colored', 'Permed', 'Bleached', 'None', 'Others'],
+        stage: 1,
+        type: ['mcq', 'multipleResponse']
+    },
 
-const stage2 = [17,18,19,20,21,22,23]; //brand or product-related questions
-const stage3 = [24,25,26]; //product innovation
+    //stage 2
+    10: {
+        qn_image: "/static/images/wash_frequency.gif",
+        options: ['2-3 times per day', 'Once per day', 'Once every 2-3 days', 'Others'],
+        stage: 2,
+        type: ['mcq']
+    },
 
-let responses = []; // Store all responses here
-let personality = []; // determine results page based on users' responses to selected questions
-let finalPersona = ''; // determines which results page to display
+    11: {
+        qn_image: "/static/images/hair_products.gif",
+        options: ['Shampoo', 'Hair conditioner', 'Hair mask', 'Leave-in treatments', 'Others'],
+        stage: 2,
+        type: ['mcq', 'multipleResponse']
+    },
+    12: {
+        qn_image: "/static/images/styling_products.gif",
+        options: ['Hair dryer', 'Flat iron', 'Curler', 'Gels & Mousses', 'Serums', 'None', 'Others'],
+        stage: 2,
+        type: ['mcq', 'multipleResponse']
+    },
+    13: {
+        qn_image: "/static/images/switch_brand.gif",
+        options: ['Every few months', 'Every year', 'Every few years', 'I do not switch', 'Others'],
+        stage: 2,
+        type: ['mcq']
+    },
+    14: {
+        qn_image: "/static/images/hair_salon.gif",
+        options: ['Every few weeks', 'Every few months', 'Once a year', 'I do not visit', 'Others'],
+        stage: 2,
+        type: ['mcq']
+    },
+    15: {
+        qn_image: "/static/images/hair_goals.gif",
+        options: ['Volume', 'Shine', 'Smoothness', 'None', 'Others'],
+        stage: 2,
+        type: ['mcq', 'multipleResponse']
+    },
 
-const mcq = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,21,24,25]
-const shortAns = [1]
-const multipleResponse = [6, 8, 9, 11, 12, 15, 17, 18, 24]
-const predefinedAnswers = {
+    //scale
+    16: {
+        qn_image: "/static/images/hair_health.gif",
+        options: [1, 2, 3, 4, 5],
+        stage: 2,
+        type: ['mcq']
+    },
 
-    1: [
-        {
-            qn_image: "/static/images/0_oh_hi.gif"
-        }
-    ],
-    2: [
-        {
-            qn_image: "/static/images/0_smiling.gif",
-            options: ['<18', '18-24', '25-34', '35-44', '45-54', '55-64', '65-74', '>74']
-        }
-    ],
-    3: [
-        {
-            qn_image: "/static/images/0_chat.gif",
-            options: ['Male', 'Female', 'Non-binary', 'Prefer not to say']}
-    ],
-    4: [
-        {
-            qn_image: "/static/images/hair_length.gif",
-            options: ['Short', 'Medium', 'Long']
+    //stage 3
+    17: {
+        qn_image: "/static/images/product_awareness.gif",
+        options: ['Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection', 'Nutrient blend collection', 'None'],
+        stage: 3,
+        type: ['mcq', 'multipleResponse']
+    },
+    18: {
+        qn_image: "/static/images/info.gif",
+        options: ['Word of mouth', 'Retail shops', 'Social media', 'TV commercials', 'Others'],
+        stage: 3,
+        type: ['mcq', 'multipleResponse']
+    },
+    19: {
+        qn_image: "/static/images/fav.gif", /* fav */
+        options: [],
+        stage: 3,
+        type: ['open']
+    },
+    20: {
+        qn_image: "/static/images/least_fav.gif", /* least fav */
+        options: [],
+        stage: 3,
+        type: ['open']
+    },
+
+    //scale
+    21: {
+        qn_image: "/static/images/effectiveness.gif", /* overall effectiveness */
+        options: [1, 2, 3, 4, 5],
+        stage: 3,
+        type: ['mcq']
+    },
+    22: {
+        qn_image: "/static/images/recommend.gif", /* recommend */
+        options: [],
+        stage: 3,
+        type: ['open']
+    },
+    23: {
+        qn_image: "/static/images/improvements.gif", /* improvements */
+        options: [],
+        stage: 3,
+        type: ['open']
+    },
+
+    //stage 4
+    24: {
+        qn_image: "/static/images/factors.gif", /* importance of factors */
+        options: ['Natural ingredients', 'Fragrance', 'Celebrity endorsements or influencer recommendations', 'Specific hair concerns', 'Price', 'Multi-functional benefits', 'Eco-friendly or sustainable packaging', 'Hair stylists for salon professionals', 'Advertising campaigns or promotions', 'Others'],
+        stage: 4,
+        type: ['mcq', 'multipleResponse']
+    },
+    25: {
+        qn_image: "/static/images/price.gif", /* price range */
+        options: ['Under $10', '$10-$30', '$30-$100', 'Above $100'],
+        stage: 4,
+        type: ['mcq']
+    },
+    26: {
+        qn_image: "/static/images/online_instore.gif", /* online/ in store */
+        options: [],
+        stage: 4,
+        type: ['open']
     }
-    ],
-    5: [
-        {
-            qn_image: "/static/images/hair_type.gif",
-            options: ['Straight', 'Wavy', 'Curly', 'Others']
-        }
-    ],
-    6: [
-        {
-            qn_image: "/static/images/hair_concerns.gif",
-            options: ['Split ends', 'Breakage', 'Thinning', 'None', 'Others']
-        }
-    ],
-    7: [
-        {
-            qn_image: "/static/images/concerned.gif",
-            options: ['Dry', 'Oily', 'Normal', 'Others']
-        }
-    ],
-    8: [
-        {
-            qn_image: "/static/images/scalp_concerns.gif",
-            options: ['Sensitive', 'Allergies', 'Dandruff', 'Dryness', 'None', 'Others']
-        }
-    ],
-    9: [
-        {
-            qn_image: "/static/images/hair_treatments.gif",
-            options: ['Colored', 'Permed', 'Bleached', 'None', 'Others']
-        }
-    ],
-
-    //next stag
-    10: [
-        {
-            qn_image: "/static/images/wash_frequency.gif",
-            options: ['2-3 times per day', 'Once per day', 'Once every 2-3 days', 'Others']
-        }
-    ],
-
-    11: [
-        {
-            qn_image: "/static/images/hair_products.gif",
-            options: ['Shampoo', 'Hair conditioner', 'Hair mask', 'Leave-in treatments', 'Others']
-        }
-    ],
-    12: [
-        {
-            qn_image: "/static/images/styling_products.gif",
-            options: ['Hair dryer', 'Flat iron', 'Curler', 'Gels & Mousses', 'Serums', 'None', 'Others']
-        }
-    ],
-    13: [
-        {
-            qn_image: "/static/images/switch_brand.gif",
-            options: ['Every few months', 'Every year', 'Every few years', 'I do not switch', 'Others']
-        }
-    ],
-    14: [
-        {
-            qn_image: "/static/images/hair_salon.gif",
-            options: ['Every few weeks', 'Every few months', 'Once a year', 'I do not visit', 'Others']
-        }
-    ],
-    15: [
-        {
-            qn_image: "/static/images/hair_goals.gif",
-            options: ['Volume', 'Shine', 'Smoothness', 'None', 'Others']
-        }
-    ],
-
-    //scale
-    16: [
-        {
-            qn_image: "/static/images/hair_health.gif",
-            options: [1,2,3,4,5]
-        }
-    ],
-
-
-    17: [
-        {
-            qn_image: "/static/images/product_awareness.gif",
-            options: ['Micellar series', 'Core benefits', '3 minutes miracle', 'Miracles collection','Nutrient blend collection', 'None']
-        }
-            
-    ],
-    18: [
-        {
-            qn_image: "/static/images/info.gif",
-            options: ['Word of mouth', 'Retail shops', 'Social media', 'TV commercials', 'Others']
-        }
-    ],
-    19: [
-        {
-            qn_image: "/static/images/fav.gif", /* fav */
-        }
-    ],
-    20: [
-        {
-            qn_image: "/static/images/least_fav.gif", /* least fav */
-            'Others': null
-        }
-    ],
-
-    //scale
-    21: [
-        {
-            qn_image: "/static/images/effectiveness.gif", /* overall effectiveness */
-            options: [1,2,3,4,5]
-        }
-    ],
-    22: [
-        {
-            qn_image: "/static/images/recommend.gif", /* recommend */
-        }
-    ],
-    23: [
-        {
-            qn_image: "/static/images/improvements.gif", /* improvements */
-        }
-    ],
-
-    /* last stage */
-    24: [
-        {
-            qn_image: "/static/images/factors.gif", /* importance of factors */
-            options: ['Natural ingredients', 'Fragrance', 'Celebrity endorsements or influencer recommendations', 'Specific hair concerns', 'Price', 'Multi-functional benefits', 'Eco-friendly or sustainable packaging', 'Hair stylists for salon professionals', 'Advertising campaigns or promotions', 'Others']
-        }
-    ],
-    25: [
-        {
-            qn_image: "/static/images/price.gif", /* price range */
-            options: ['Under $10', '$10-$30', '$30-$100', 'Above $100']
-        }
-    ],
-    26: [
-        {
-            qn_image: "/static/images/online_instore.gif", /* online/ in store */
-        }
-    ]
 
 };
 
@@ -188,6 +180,87 @@ const stage_images = {
     3: "/static/images/growth2.gif",
     // 4: "/static/images/growth3.gif"
 };
+
+/****************************Do not edit anything below this line****************************************/
+
+
+// given a survey object, returns the predefinedAnswers object found in script.js
+function transformSurveyObject(surveyObject) {
+    const answers = {};
+
+    for (const [questionNum, questionData] of Object.entries(surveyObject)) {
+        // Extract question image
+        const qn_image = questionData.qn_image;
+
+        // check for images and options and append to answers
+        if (questionData.options && questionData.options.length && qn_image !== "") {
+            answers[questionNum] = [{ qn_image, options: questionData.options }];
+        } else if (questionData.options && questionData.options.length) {
+            answers[questionNum] = [{ options: questionData.options }];
+        } else if (qn_image !== "") {
+            answers[questionNum] = [{ qn_image }];
+        } else {
+            answers[questionNum] = [{}];
+        }
+
+    }
+
+    return answers;
+}
+
+// Given a survey object, returns the different stage objects found in script.js together in a dict
+function getStages(surveyObject) {
+    const stages = {}
+
+    // Separate the questions into the different stages
+    for (const [questionNum, questionData] of Object.entries(surveyObject)) {
+        const stage = `Stage${questionData.stage}`;
+        if (!stages.hasOwnProperty(stage)) {
+            // If not, create a new array for the stage
+            stages[stage] = [];
+        }
+
+        // Add the question number to the corresponding stage
+        stages[stage].push(Number(questionNum));
+    }
+    return stages;
+}
+
+// Given a survey object, returns the different type objects found in script.js together in a dict
+function getTypes(surveyObject) {
+    // Initialise the different types of questions
+    const types = { mcq: [], shortAns: [], multipleResponse: [] }
+
+    // Append the question number to their corresponding types
+    for (const [questionNum, questionData] of Object.entries(surveyObject)) {
+        // Iterate over each type in the list
+        for (const type of questionData.type) {
+            if (type != 'open') {
+                types[type].push(Number(questionNum));
+            }
+        }
+    }
+    return types;
+}
+
+
+// Transform the survey object
+const predefinedAnswers = transformSurveyObject(surveyObject);
+const stages = getStages(surveyObject)
+const types = getTypes(surveyObject)
+
+console.log(stages)
+
+let responses = []; // Store all responses here
+let personality = []; // determine results page based on users' responses to selected questions
+let finalPersona = ''; // determines which results page to display
+
+const mcq = types['mcq']
+const shortAns = types['shortAns']
+const multipleResponse = types['multipleResponse']
+
+
+
 
 let currentStage = 0
 
@@ -204,26 +277,26 @@ function startSurvey() {
     console.log(currentStage) //for debugging
 
     // Fetch the first question of the survey
-    fetch('/initialise_survey', { 
-        method: 'POST', 
-        headers: { 
-            'Content-Type': 'application/json', 
-        }, 
-    }) 
-    .then(backendInput => { 
-        if (!backendInput.ok) { 
-            throw new Error('Network response was not ok'); 
-        } 
-        return backendInput.json(); //parse the JSON response
-    }) 
-    .then(backendInput => { 
-        console.log("User initiated to start survey. Received first qn from backend:", backendInput); 
-        renderQuestion(backendInput['llm_reply'], backendInput['next_question_id']); // Display the very first question
+    fetch('/initialise_survey', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(backendInput => {
+            if (!backendInput.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return backendInput.json(); //parse the JSON response
+        })
+        .then(backendInput => {
+            console.log("User initiated to start survey. Received first qn from backend:", backendInput);
+            renderQuestion(backendInput['llm_reply'], backendInput['next_question_id']); // Display the very first question
 
-    }) 
-    .catch(error => { 
-        console.error('Error initializing the survey:', error); //notify when there's an error, for debugging
-    }); 
+        })
+        .catch(error => {
+            console.error('Error initializing the survey:', error); //notify when there's an error, for debugging
+        });
 }
 
 
@@ -240,15 +313,15 @@ function scrollToSection(sectionId) {
 function autoExpand(element) {
     element.style.height = 'auto';
     element.style.height = (element.scrollHeight) + 'px';
-  }
+}
 
 // display the qn (llm_reply) given by backend 
-function renderQuestion(questionText, qn_index) { 
+function renderQuestion(questionText, qn_index) {
     console.log("This is the stage rn", currentStage) // for debugging
     // remove loading page after LLM has finished generating its response
     document.getElementById('loading-page').classList.add('hide');
     document.getElementById('survey-container').classList.remove('hide');
-    
+
     const headerContainer = document.getElementById('big-container');
     const questionContainer = document.getElementById('question');
     const imageContainer = document.getElementById('image'); // see 'question', 'image', 'answers' etc on index html
@@ -259,7 +332,7 @@ function renderQuestion(questionText, qn_index) {
     scrollToSection('big-container')
 
     questionContainer.innerHTML = questionText;
-    
+
     // Add question image after question text
     // Clear previous content of the image container
     imageContainer.innerHTML = '';
@@ -281,8 +354,8 @@ function renderQuestion(questionText, qn_index) {
         if (multipleResponse.includes(qn_index)) {
             qnType = 'checkbox'
         }
-        let mcqQuestion = predefinedAnswers[qn_index] 
-        mcqQuestion[0].options.forEach((option, index) => { 
+        let mcqQuestion = predefinedAnswers[qn_index]
+        mcqQuestion[0].options.forEach((option, index) => {
             const container = document.createElement('div');
             const optionInput = document.createElement('input');
             const label = document.createElement('label');
@@ -344,9 +417,9 @@ function renderQuestion(questionText, qn_index) {
             let answer = '';
             const selectedOption = document.querySelector('input[name="answer"]:checked');
             if (qnType === 'radio') { // single choice mcq
-            if (selectedOption) {
-                answer = selectedOption.value === 'Others' ? document.getElementById('otherText').value.trim() : selectedOption.value;
-            }
+                if (selectedOption) {
+                    answer = selectedOption.value === 'Others' ? document.getElementById('otherText').value.trim() : selectedOption.value;
+                }
             } else { //multiple responses mcq
                 const selectedOptions = document.querySelectorAll('input[name="answer"]:checked');
                 selectedOptions.forEach((option, index) => {
@@ -358,7 +431,7 @@ function renderQuestion(questionText, qn_index) {
                     } else {
                         answer += option.value;
                     }
-            
+
                     // Add comma after each selected option except the last selected option to put all selected options into a single string
                     if (index < selectedOptions.length - 1) {
                         answer += ', ';
@@ -371,8 +444,8 @@ function renderQuestion(questionText, qn_index) {
                 submitAnswer(answer, currentStage, qn_index);
             }
         };
-        
-    } 
+
+    }
     else if (shortAns.includes(qn_index)) {
         // Create an input element
         var textInput = document.createElement('input');
@@ -425,48 +498,48 @@ function renderQuestion(questionText, qn_index) {
 
 function submitAnswer(answer, stageNumber, qn_index) {
     // update personality list accordingly, for results page
-    addPersona(answer, qn_index); 
+    addPersona(answer, qn_index);
     console.log(`Submitted: Stage ${stageNumber}, Answer: ${answer}`); // for debugging
-    responses.push({stageNumber, answer });
+    responses.push({ stageNumber, answer });
 
     // display loading page while waiting for LLM to generate its response
     document.getElementById('survey-container').classList.add('hide');
     document.getElementById('loading-page').classList.remove('hide');
 
     // calls function to send users' response via API communication to backend
-    sendUserAnswerToBackend( {'user_response': answer,'stage': stageNumber} )
+    sendUserAnswerToBackend({ 'user_response': answer, 'stage': stageNumber })
 }
 
-function sendUserAnswerToBackend(userAnswer) { 
-    fetch('/get_question_id_and_llm_response', { 
-        method: 'POST', 
-        headers: { 
-            'Content-Type': 'application/json', 
-        }, 
-        body: JSON.stringify(userAnswer), 
-    }) 
-    .then(backendInput => { 
-        if (!backendInput.ok) { 
-            // remove loading page when LLM has finished generating its response and show it
-            document.getElementById('loading-page').classList.add('hide');
-            document.getElementById('survey-container').classList.remove('hide');
-            throw new Error('Network response was not ok'); 
-        } 
-        return backendInput.json(); //parse the JSON response
-    }) 
-    .then(backendInput => { 
-        console.log("User's answer sent to backend. Received output from backend:", backendInput); //for debugging
-        if (backendInput['next_question_id'] === -1) {
-            showSurveyCompletionPage(backendInput['llm_reply']);
-        } else if (checkSameStage(backendInput)) {
-            renderQuestion(backendInput['llm_reply'], backendInput['next_question_id']); // Display the next question
-        } else {
-            showStageCompletionImage(backendInput['llm_reply'], backendInput['next_question_id']); // Show stage completion first then display next qn
-        }
-    }) 
-    .catch(error => { 
-        console.error('Error sending user’s answer to backend:', error); //notify when there's an error, for debugging
-    }); 
+function sendUserAnswerToBackend(userAnswer) {
+    fetch('/get_question_id_and_llm_response', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userAnswer),
+    })
+        .then(backendInput => {
+            if (!backendInput.ok) {
+                // remove loading page when LLM has finished generating its response and show it
+                document.getElementById('loading-page').classList.add('hide');
+                document.getElementById('survey-container').classList.remove('hide');
+                throw new Error('Network response was not ok');
+            }
+            return backendInput.json(); //parse the JSON response
+        })
+        .then(backendInput => {
+            console.log("User's answer sent to backend. Received output from backend:", backendInput); //for debugging
+            if (backendInput['next_question_id'] === -1) {
+                showSurveyCompletionPage(backendInput['llm_reply']);
+            } else if (checkSameStage(backendInput)) {
+                renderQuestion(backendInput['llm_reply'], backendInput['next_question_id']); // Display the next question
+            } else {
+                showStageCompletionImage(backendInput['llm_reply'], backendInput['next_question_id']); // Show stage completion first then display next qn
+            }
+        })
+        .catch(error => {
+            console.error('Error sending user’s answer to backend:', error); //notify when there's an error, for debugging
+        });
 }
 
 // returns True if next question_id backend supplies is from the same stage as the current question_id, stored in variable currentStage 
@@ -474,22 +547,8 @@ function sendUserAnswerToBackend(userAnswer) {
 //Else, display stage completion first before displaying new question from new stage
 function checkSameStage(backendInput) {
     let next_question_id = backendInput['next_question_id']
-
-    if (currentStage === 0) {
-        return (presurveystage.includes(next_question_id)) //returns True if next qn id is still in same stage. same for the below 4 -if statements
-    }
-    if (currentStage === 1) {
-        return (stage0.includes(next_question_id)) 
-    }
-    if (currentStage === 2) {
-        return (stage1.includes(next_question_id)) 
-    }
-    if (currentStage === 3) {
-        return (stage2.includes(next_question_id)) 
-    }
-    if (currentStage === 4) {
-        return (stage3.includes(next_question_id))
-    }
+    const stageKey = `Stage${currentStage}`
+    return (stages[stageKey].includes(next_question_id))
 }
 
 
@@ -538,7 +597,7 @@ function displayResult(persona) {
         resultImage.src = "/static/images/purple.gif";
     } else if (persona === 'Rainbow') {
         resultImage.src = "/static/images/rainbow.gif";
-    } 
+    }
     resultImage.alt = 'result image';
 }
 
@@ -548,13 +607,13 @@ function showStageCompletionImage(next_stage_qn, next_question_id) {
     // remove loading page to show stage completion gif instead
     document.getElementById('loading-page').classList.add('hide');
     document.getElementById('survey-container').classList.remove('hide');
-        
+
     const questionContainer = document.getElementById('question');
     const imageContainer = document.getElementById('image');
     const answersContainer = document.getElementById('answers');
     const nextButton = document.getElementById('next-btn');
 
-    questionContainer.innerHTML = ''; 
+    questionContainer.innerHTML = '';
     imageContainer.innerHTML = '';
     answersContainer.innerHTML = `Stage ${currentStage} completed!`;
     nextButton.style.display = 'block';
@@ -571,7 +630,7 @@ function showStageCompletionImage(next_stage_qn, next_question_id) {
     //user presses button to proceed to next stage 
     nextButton.onclick = () => {
         renderQuestion(next_stage_qn, next_question_id);
-        }; 
+    };
 }
 const resultImage = document.createElement('img');
 const imageContainer = document.getElementById('imageContainer');
@@ -588,7 +647,7 @@ function showSurveyCompletionPage(llm_reply) {
     // This part of the code to thank the user
     const questionContainer = document.getElementById('question');
     questionContainer.innerHTML = llm_reply;
-   
+
     //next button to show results page
     const nextButton = document.getElementById('next-btn');
     const imageContainer = document.getElementById('image');
@@ -610,23 +669,23 @@ function showSurveyCompletionPage(llm_reply) {
         const finalStageMascot = document.createElement('img');
         // identify correct image to display
         if (finalPersona === 'Blue') {
-            finalStageMascot.src =  "/static/images/blue.gif";
+            finalStageMascot.src = "/static/images/blue.gif";
         } else if (finalPersona === 'Green') {
-            finalStageMascot.src =  "/static/images/green.gif";
+            finalStageMascot.src = "/static/images/green.gif";
         } else if (finalPersona === 'Yellow') {
-            finalStageMascot.src =  "/static/images/yellow.gif";
+            finalStageMascot.src = "/static/images/yellow.gif";
         } else if (finalPersona === 'Red') {
-            finalStageMascot.src =  "/static/images/red.gif";
+            finalStageMascot.src = "/static/images/red.gif";
         } else if (finalPersona === 'Purple') {
-            finalStageMascot.src =  "/static/images/purple.gif";
+            finalStageMascot.src = "/static/images/purple.gif";
         } else if (finalPersona === 'Rainbow') {
-            finalStageMascot.src =  "/static/images/rainbow.gif";
+            finalStageMascot.src = "/static/images/rainbow.gif";
         }
         // Display the final personality result here, adjusting its size
         finalStageMascot.style.width = '400px'; // Set width to 400 pixels
         finalStageMascot.style.height = 'auto'; // Maintain aspect ratio
         const tryNew = document.getElementById('results-page');
         tryNew.appendChild(finalStageMascot);
-        }; 
+    };
 
 }

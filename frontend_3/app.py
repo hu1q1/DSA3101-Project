@@ -12,35 +12,9 @@ def index():
 
 
 ########backend handling stuff!!!!! ############
-
-curr_qn = [
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    16,
-    17,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
-    24,
-    25,
-    26,
-    -1,
-]
+number_of_questions = 26
+curr_qn = [i for i in range(2, number_of_questions + 1)]
+curr_qn.append(-1)
 
 
 @app.route("/initialise_survey", methods=["POST"])

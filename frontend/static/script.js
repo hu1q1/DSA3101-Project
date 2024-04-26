@@ -181,8 +181,8 @@ const surveyObject = {
 };
 
 const stage_images = {
-    0: "/static/images/aft_presurvey.gif", /* technically dn?.. */
-    1: "/static/images/growth0.gif", /* for end of stage 0 */
+    0: "/static/images/aft_presurvey.gif", 
+    1: "/static/images/growth0.gif", 
     2: "/static/images/growth1.gif",
     3: "/static/images/growth2.gif",
     // 4: "/static/images/growth3.gif"
@@ -567,14 +567,15 @@ function sendUserAnswerToBackend(userAnswer) {
 }
 
 // returns True if next question_id backend supplies is from the same stage as the current question_id, stored in variable currentStage 
-//If so, goes straight into displaying next question from same stage
-//Else, display stage completion first before displaying new question from new stage
+// If so, goes straight into displaying next question from same stage
+// Else, display stage completion first before displaying new question from new stage
 function checkSameStage(backendInput) {
     let next_question_id = backendInput['next_question_id']
     const stageKey = `Stage${currentStage}`
     return (stages[stageKey].includes(next_question_id))
 }
 
+// check if question and answer meet personality criteria
 function addPersona(answer, qnNo) {
     console.log(`addPersonaDynamic called, question number is ${qnNo}`);
     for (const [persona, criteria] of Object.entries(decidePersonaCriteria)) {
@@ -586,6 +587,7 @@ function addPersona(answer, qnNo) {
     }
 }
 
+// decide one final result for display after survey completion
 function decidePersona(p) {
     console.log(`Deciding persona from ${p}`)
     if (p.length === 0) {
@@ -596,23 +598,6 @@ function decidePersona(p) {
         finalPersona = p[randomIndex];
         console.log(`Final Persona: ${finalPersona}`);
     }
-}
-
-function displayResult(persona) {
-    if (persona === 'Blue') {
-        resultImage.src = "/static/images/blue.gif";
-    } else if (persona === 'Green') {
-        resultImage.src = "/static/images/green.gif";
-    } else if (persona === 'Yellow') {
-        resultImage.src = "/static/images/yellow.gif";
-    } else if (persona === 'Red') {
-        resultImage.src = "/static/images/red.gif";
-    } else if (persona === 'Purple') {
-        resultImage.src = "/static/images/purple.gif";
-    } else if (persona === 'Rainbow') {
-        resultImage.src = "/static/images/rainbow.gif";
-    }
-    resultImage.alt = 'result image';
 }
 
 function showStageCompletionImage(next_stage_qn, next_question_id) {

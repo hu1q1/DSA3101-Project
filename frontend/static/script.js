@@ -1,4 +1,7 @@
-// Welcome to the script for Convey. If you're here to configure the survey, simply edit surveyObject and stageImages.
+// Welcome to the script for Convey. If you're here to configure the survey, simply edit surveyObject and stageImages. 
+
+//For questions without images, leave qn_image as ""
+//For open ended questions, leave options as []
 const surveyObject = {
     //stage 0
     1: {
@@ -169,7 +172,7 @@ const surveyObject = {
         options: [],
         stage: 4,
         type: ['open']
-    }
+    },
 
 };
 

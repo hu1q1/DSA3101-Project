@@ -36,7 +36,6 @@ Secondary Objectives
    3) `Dockerfile`: The dockerfile used to create an image for the frontend application
    4) `app.py`: The Python file responsible for running the frontend application
    5) `requirements.txt`: File listing the dependencies required to run the frontend application
-   6) `package.json`: File defining metadata and configuration for the frontend application
    
 4) `docker-compose.yaml`: The docker compose file to build the containers for the frontend and backend app
 

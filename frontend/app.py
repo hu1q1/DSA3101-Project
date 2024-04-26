@@ -9,10 +9,6 @@ def index():
         "index.html"
     )  
 
-number_of_questions = 26
-curr_qn = [i for i in range(2, number_of_questions + 1)]
-curr_qn.append(-1)
-
 @app.route("/initialise_survey", methods=["POST"])
 def initialise_survey():
 

@@ -24,7 +24,7 @@ Secondary Objectives
    9)   `load_env.py`: Loads environment variables from .env files in the directory
    10)  `models.py`: Sets up the models as specified in `config.yaml`
    11) `requirement.txt`: List of required dependencies needed to run the backend app
-2) `frontend`: folder containing files relevant to the frontend app   (TODO: frontend to update their repo structure)
+2) `frontend`: folder containing files relevant to the frontend app 
    1) `templates`: Folder containing HTML file templates 
       1) `index.html`: File for the basic structure of the website
        

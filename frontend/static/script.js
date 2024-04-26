@@ -193,15 +193,15 @@ const decidePersonaCriteria = {
         q_number: 11,
         answer: ['Hair mask', 'Leave-in treatments']
     },
-    Blue: {
+    Yellow: {
         q_number: 10,
         answer: ['2-3 times per day', 'Once per day']
     },
-    Blue: {
+    Red: {
         q_number: 18,
         answer: ['Word of mouth', 'Retail shops']
     },
-    Blue: {
+    Purple: {
         q_number: 9,
         answer: ['Colored', 'Bleached']
     },

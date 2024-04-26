@@ -12,7 +12,7 @@ Secondary Objectives
 5) Targeted User Experience: Establish capabilities for dynamically adapting survey questions, flow, and wording based on the user's responses, delivering targeted and relevant survey experiences.
 
 ## Repository Structure
-1) `backend testing`: folder containing files relevant to the backend app
+1) `backend`: folder containing files relevant to the backend app
    1)  `api_test.py`: Used to test if the backend app works locally
    2)  `app.py`: Main file to run the app
    3)  `cache.py`: Contains a dictionary that keeps track of the need to ask a follow-up question for each survey question
@@ -25,12 +25,21 @@ Secondary Objectives
    10)  `models.py`: Sets up the models as specified in `config.yaml`
    11) `requirement.txt`: List of required dependencies needed to run the backend app
 2) `frontend`: folder containing files relevant to the frontend app   (TODO: frontend to update their repo structure)
-   1) `templates`: folder containing .html file for the basic structure of the website
-   2) `static`:
-      1) .css file for styling
-      2) .js file for establish interactivity of the website
-      3) a folder to contain all images and gifs placed in the website
-3) `docker-compose.yaml`: The docker compose file to build the containers for the frontend and backend app
+   1) `templates`: Folder containing HTML file templates 
+      1) `index.html`: File for the basic structure of the website
+       
+   2) `static` Folder containing CSS & JS files and images & gifs
+      1) `images`: Folder containing all images used in the survey, including the mascot, choices, and results
+      2) `styles.css` File for styling the HTML pages
+      3) `script.js` File to provide functionality for the HTML pages
+       
+   3) `Dockerfile`: The dockerfile used to create an image for the frontend application
+   4) `app.py`: The Python file responsible for running the frontend application
+   5) `requirements.txt`: File listing the dependencies required to run the frontend application
+   6) `package.json`: File defining metadata and configuration for the frontend application
+   
+4) `docker-compose.yaml`: The docker compose file to build the containers for the frontend and backend app
+
 
 ## Installation
 This guide provides detailed instructions for installing the necessary tools and setting up the environment to run the Convey project. Follow each step carefully to ensure a smooth installation process.

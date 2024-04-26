@@ -3,19 +3,15 @@ import requests
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def index():
     return render_template(
         "index.html"
-    )  ## something about rendering is for local files ??? not sure. need to check. and ensure that backend who don't use this can still work
+    )  
 
-
-########backend handling stuff!!!!! ############
 number_of_questions = 26
 curr_qn = [i for i in range(2, number_of_questions + 1)]
 curr_qn.append(-1)
-
 
 @app.route("/initialise_survey", methods=["POST"])
 def initialise_survey():
@@ -60,7 +56,6 @@ def handle_post_request():
     else:
         # Print error message if API response is not successful
         print("Error:", response.status_code)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
